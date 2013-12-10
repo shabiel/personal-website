@@ -1,0 +1,775 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Framework for Internationalization and Localization of VISTA</title>
+    <link rel="stylesheet" href="../css/foundation.min.css" />
+    <link rel="stylesheet" href="../css/app.css" />
+  </head>
+  <body>
+      <div class="large-12 columns">
+          <h1>Framework for Internationalization and Localization of VISTA</h1>
+          <div class="panel">
+            <h5>Prepared by Sam Habiel for Electronic Health Solutions LLC</h5>
+          </div>
+          <p>This paper shows the ways in which you can establish internationalization and localization for VISTA. The following changes to support this are shown:</p>
+          <ul>
+              <li>Creation of Generic Type of Patient and Eligibility</li>
+              <li>Creation of a National ID field and its use as an identifier</li>
+              <li>Display of dates in a dd/mm/yyyy (Little Endian) format instead of mm/dd/yyyy (Middle Endian) format</li>
+              <li>Storage of the Arabic Name and indexing it for search and display in Mumps and CPRS</li>
+          </ul>
+          <h2>Preliminaries</h2>
+          <p>Unicode is not used for Arabic support; rather, I am using Windows-1256 (a.k.a. cp1256) for Arabic Encoding. The only change to support that in Mumps is setting the terminal emulator to input and display cp1256. For CPRS to display Arabic properly on Windows XP, go to Control Panel &gt; Regional and Language Options &gt; Advanced tab. Set the language in the drop down to Arabic (Jordan) and make sure that Code page conversion table 1256 (ANSI – Arabic) is checked.</p>
+          <p>Unicode is the preferred approach, but CPRS doesn't operate with Unicode. However, all the Mumps changes are as applicable with Unicode as with cp1256.</p>
+          <p>Two databases were used to test this example: One patched up to June 2008 (and using CPRS 26) and one patched up to March 2009 (the most up to date patches available) (and using CPRS 27).</p>
+          <h2>Change Type of Patient, add Eligibility, and add National ID field</h2>
+          <p>First, add the national ID field:</p>
+          <pre>
+Select FIELD: NATIONAL ID
+LABEL: NATIONAL ID//
+TITLE:
+AUDIT:
+AUDIT CONDITION:
+READ ACCESS (OPTIONAL):
+DELETE ACCESS (OPTIONAL):
+WRITE ACCESS (OPTIONAL):
+SOURCE: NATIONAL IDENTIFICATION NUMBER FOR A PATIENT
+Select DESTINATION:
+Select GROUP:
+DESCRIPTION:
+No existing text
+Edit? NO//
+TECHNICAL DESCRIPTION:
+Stored in ^DPT(DA,"UJO0") first piece.
+
+Edit? NO//
+
+DATA TYPE OF NATIONAL ID: FREE TEXT//
+MINIMUM LENGTH: 1//
+MAXIMUM LENGTH: 12// 40
+(OPTIONAL) PATTERN MATCH (IN 'X'):
+IS NATIONAL ID ENTRY MANDATORY (Y/N): NO//   NO
+....
+'HELP'-PROMPT: Answer must be 1-40 characters in length.
+       Replace
+XECUTABLE 'HELP':
+          </pre>
+        <p>Notice that the National ID field is stored in ^DPT(DA,"UJO0")</p>
+        <p>Once this field is created, create a new patient type to replace "VISTA OFFICE EHR", which is an inappropriate term for users to see and may show up in several places. We will use "General Eligibility" or any other term instead.</p>
+        <pre>
+prod-moh> D P^DI
+
+
+VA FileMan 22.0
+
+
+Select OPTION: transFER ENTRIES
+
+
+Select TRANSFER OPTION: ?
+    Answer with TRANSFER OPTION NUMBER, or NAME
+   Choose from:
+   1            TRANSFER FILE ENTRIES
+   2            COMPARE/MERGE FILE ENTRIES
+
+Select TRANSFER OPTION: 1  TRANSFER FILE ENTRIES
+
+INPUT TO WHAT FILE: PATIENT// TYPE OF PATIENT    (10 entries)
+TRANSFER FROM FILE: TYPE OF PATIENT//
+TRANSFER DATA INTO WHICH TYPE OF PATIENT: GENERAL ELIGIBILITY
+  Are you adding 'GENERAL ELIGIBILITY' as
+    a new TYPE OF PATIENT (the 11TH)? No// Y  (Yes)
+TRANSFER FROM TYPE OF PATIENT: VISTA OFFICE EHR
+   WANT TO DELETE THIS ENTRY AFTER IT'S TRANSFERRED? No//   (No)
+...HMMM, I'M WORKING AS FAST AS I CAN...
+SINCE THE TRANSFERRED ENTRY MAY HAVE BEEN 'POINTED TO'
+BY ENTRIES IN THE 'PATIENT' FILE,
+DO YOU WANT THOSE POINTERS UPDATED (WHICH COULD TAKE QUITE A WHILE)? No//
+  (No)
+        </pre>
+        <p>The new entry looks like this:</p>
+        <pre>
+OUTPUT FROM WHAT FILE: TYPE OF PATIENT//
+Select TYPE OF PATIENT NAME: generaL ELIGIBILITY
+ANOTHER ONE:
+STANDARD CAPTIONED OUTPUT? Yes//   (Yes)
+Include COMPUTED fields:  (N/Y/R/B): NO//  - No record number (IEN), no Computed
+ Fields
+
+NAME: GENERAL ELIGIBILITY               IGNORE VETERAN CHECKS?: YES
+  *INFO TO ASK: 1234567890              MAKE RECORD SENSITIVE?: NO
+  VETERAN?: NO
+  NEW PATIENT INPUT DR: S DR=".361///REIMBURSABLE INSURANCE;.323///OTHER REIMBUR
+S. (NON-VET)"                           *EDIT APPLICANT EMPLOYER?: YES
+  *EDIT SPOUSE'S EMPLOYER?: YES         *EDIT SERVICE HISTORY?: NO
+  *EDIT PRISONER OF WAR DATA?: NO       *EDIT COMBAT DATA?: NO
+  *EDIT VIETNAM SERVICE DATA?: NO       *EDIT AGENT ORANGE DATA?: NO
+  *EDIT RADIATION EXPOSURE DATA?: NO    *EDIT MILITARY DISABILITY DATA: NO
+  *EDIT DENTAL HISTORY DATA?: YES       *EDIT VA MONETARY BENEFITS?: NO
+  *EDIT OTHER MONETARY BENEFITS?: YES   EDIT SC CONDITIONS PER PT?: NO
+  *EDIT SC CONDITIONS PER PT?: NO       *EDIT INELIGIBLE DATA?: NO
+  *EDIT MISSING DATA?: YES              EDIT INELIGIBLE DATA?: NO
+  EDIT MISSING DATA?: YES               SHOW CONTACT SCREEN?: YES
+  *SHOW EMPLOYMENT SCREEN?: YES         *SHOW INSURANCE SCREEN?: NO
+  SHOW SERVICE SCREEN?: NO              *SHOW MONETARY SCREEN?: NO
+  SHOW FAMILY INFO SCREEN: YES          SHOW INCOME SCREENING SCREEN: NO
+  SHOW INELIGIBLE SCREEN: NO            SHOW VERIFICATION SCREEN?: NO
+        </pre>
+        <p>We are going to edit the "NEW PATIENT INPUT DR" in a moment, but we need to fix the ELIGIBILITY and PERIOD OF SERVICE files first.</p>
+        <p>Let's fix ELIGIBILITY first. It currently says "EHR PATIENT", which is non-sensical in many reports. Eligibility determines the ID format the system uses, so we need to take care of that first. That's in the IDENTIFICATION FORMAT file.</p>
+        <pre>
+Select OPTION: enter OR EDIT FILE ENTRIES
+
+
+
+INPUT TO WHAT FILE: IDENTIFICATION FORMAT//
+EDIT WHICH FIELD: ALL//
+
+
+Select IDENTIFICATION FORMAT NAME: NATIONAL ID
+  Are you adding 'NATIONAL ID' as
+    a new IDENTIFICATION FORMAT (the 3RD)? No// Y  (Yes)
+PROMPT USER FOR ID?:
+CROSS REFERENCE SET LOGIC:
+CROSS REFERENCE KILL LOGIC:
+XECUTABLE 'HELP':
+DESCRIPTION:
+  No existing text
+  Edit? NO// YES
+
+==[ WRAP ]==[ INSERT ]=============&lt; DESCRIPTION &gt;===========[ &lt;PF1&gt;H=Hel]
+National ID for Jordan and other interested countries.
+
+
+<=======T=======T=======T=======T=======T=======T=======T=======T=======T>
+
+
+INPUT TRANSFORM:
+DEFAULT LONG ID VALUE LOGIC: S X=$P($G(^DPT(DA(1),"UJO0")),U)
+SHORT ID TRANSFORM: S X=$P($G(^DPT(DA(1),"UJO0")),U),X=$E(X,$L(X)-3,$L(X))
+
+Select IDENTIFICATION FORMAT NAME:
+        </pre>
+        <p>Then MAS ELIGIBILITY CODE:</p>
+        <pre>
+INPUT TO WHAT FILE: ELIGIBILITY CODE// MAS ELIGIBILITY CODE
+                                          (22 entries)
+EDIT WHICH FIELD: ALL// INACTIVE
+THEN EDIT FIELD:
+
+
+Select MAS ELIGIBILITY CODE NAME:    REIMBURSABLE INSURANCE  8
+INACTIVE: YES//   (No Editing)
+        </pre>
+        <p>This is where we get stuck. There are no other suitable MAS ELIGIBILITY CODES to use. We have to activate this. We can fix that:</p>
+        <pre>
+Select UTILITY OPTION: 9  UNEDITABLE DATA
+
+MODIFY WHAT FILE: MAS ELIGIBILITY CODE//
+Select FIELD: INACTIVE
+FIELD IS ALREADY UNEDITABLE
+DO YOU WANT TO ALLOW EDITING AGAIN? No// Y  (Yes)  ..OK
+        </pre>
+        <p>Now then:</p>
+        <pre>
+INPUT TO WHAT FILE: MAS ELIGIBILITY CODE//
+EDIT WHICH FIELD: ALL// inactive
+THEN EDIT FIELD:
+
+
+Select MAS ELIGIBILITY CODE NAME:    REIMBURSABLE INSURANCE  8
+INACTIVE: YES// @
+   SURE YOU WANT TO DELETE? y  (Yes)
+        </pre>
+        <p>And then, we can enter Eligibility:</p>
+        <pre>
+Select OPTION:    ENTER OR EDIT FILE ENTRIES
+
+
+
+INPUT TO WHAT FILE: ELIGIBILITY CODE//
+EDIT WHICH FIELD: ALL//
+
+
+Select ELIGIBILITY CODE NAME: GENERAL ELIGIBILITY
+  Are you adding 'GENERAL ELIGIBILITY' as
+    a new ELIGIBILITY CODE (the 24TH)? No// Y  (Yes)
+   ELIGIBILITY CODE VA CODE NUMBER: 8
+   ELIGIBILITY CODE MAS ELIGIBILITY CODE: REIMBURSABLE INSURANCE    8
+MAKE RECORD SENSITIVE?:
+ABBREVIATION: GEN
+PRINT NAME: ??
+     Enter abbreviated Eligibility Code name for ouput in limited space.
+PRINT NAME: GEN ELIG
+INACTIVE:
+MAS ELIGIBILITY CODE: REIMBURSABLE INSURANCE//
+ID FORMAT: NATIONAL ID
+Select SYNONYM:
+AGENCY: EHR
+        </pre>
+        <p>Now we can fix the PERIOD OF SERVICE entry "OTHER OR NONE":</p>
+        <pre>
+Select OPTION: enter OR EDIT FILE ENTRIES
+
+
+
+INPUT TO WHAT FILE: PERIOD OF SERVICE//
+EDIT WHICH FIELD: ALL// eligibility    (multiple)
+   EDIT WHICH ELIGIBILITY SUB-FIELD: ALL//
+THEN EDIT FIELD:
+
+
+Select PERIOD OF SERVICE NAME:    OTHER OR NONE
+                                        (9)
+Select ELIGIBILITY: HUMANITARIAN EMERGENCY// GENERAL ELIGIBILITY    8      8   N
+ON-VETERAN
+  Are you adding 'GENERAL ELIGIBILITY' as a new ELIGIBILITY (the 10TH for this
+PERIOD OF SERVICE)? No// Y  (Yes)
+Select ELIGIBILITY:
+        </pre>
+        <p>Now, time to fix the DR string in the TYPE OF PATIENT file.</p>
+        <p>Field .361 points to the Eligibility Code. Field .323 points to the Period of Service.</p>
+        <pre>
+INPUT TO WHAT FILE: PERIOD OF SERVICE// TYPE OF PATIENT
+                                          (11 entries)
+EDIT WHICH FIELD: ALL// NEW PATIENT INPUT DR
+THEN EDIT FIELD:
+
+
+Select TYPE OF PATIENT NAME: GENERAL ELIGIBILITY
+NEW PATIENT INPUT DR: S DR=".361///REIMBURSABLE INSURANCE;.323///OTHER REIMBURS.
+ (NON-VET)"  Replace ... With S DR=".361///GENERAL ELIGIBILITY;.323//OTHER OR NO
+^  Replace ^
+
+
+Select TYPE OF PATIENT NAME:    GENERAL ELIGIBILITY
+NEW PATIENT INPUT DR: S DR=".361///REIMBURSABLE INSURANCE;.323///OTHER REIMBURS.
+ (NON-VET)"  Replace ... With S DR=".361///GENERAL ELIGIBILITY;.323///OTHER OR N
+ONE"  Replace
+   S DR=".361///GENERAL ELIGIBILITY;.323///OTHER OR NONE"
+        </pre>
+        <p>Time to test whether our changes work in theory (outside of any routines):</p>
+        <pre>
+EHR,EHR&gt; S DIC=2,DIC(0)="ALEMQ",DLAYGO=2,DIC("DR")=".02;.03;994;.301;391;1901;40
+0000000;.361;.323"
+
+EHR,EHR&gt; D ^DIC
+
+Select PATIENT NAME: COYOTE,WILEY
+   ARE YOU ADDING 'COYOTE,WILEY' AS A NEW PATIENT (THE 16TH)? No// Y  (Yes)
+Enter complete middle name if known or press <return> to add as entered: :
+
+   ...adding new patient
+   PATIENT SEX: F  FEMALE
+   PATIENT DATE OF BIRTH: 1920  (1920)
+   PATIENT MULTIPLE BIRTH INDICATOR:
+   PATIENT SERVICE CONNECTED?: N  NO
+   PATIENT TYPE: GENERAL ELIGIBILITY
+   PATIENT VETERAN (Y/N)?: N  NO
+   PATIENT NATIONAL ID: 1234567899
+   PATIENT PRIMARY ELIGIBILITY CODE: GENERAL ELIGIBILITY    8      8   NON-VETER
+AN
+   PATIENT PERIOD OF SERVICE: ?
+     Select from the available listing the period of service which best
+     classifies this patient.
+     POS must be compatible with Eligibility Code
+ Answer with PERIOD OF SERVICE NAME, or ABBREVIATION, or CODE, or
+     SYNONYM
+ Do you want the entire PERIOD OF SERVICE List? Y  (Yes)
+   Choose from:
+   OTHER OR NONE                        (9)
+   OTHER REIMBURS. (NON-VET)            (P)
+
+     Current Eligibility Code: GENERAL ELIGIBILITY
+   PATIENT PERIOD OF SERVICE: OTHER OR NONE
+                                        (9)
+HEALTH RECORD NO.: 777885567// 777885567
+EHR,EHR&gt; W Y
+17^COYOTE,WILEY^1
+EHR,EHR&gt; D P^DI
+
+
+VA FileMan 22.0
+
+
+Select OPTION: INQUIRE TO FILE ENTRIES
+
+
+
+OUTPUT FROM WHAT FILE: PATIENT//
+Select PATIENT NAME:
+  COYOTE,WILEY                              F 00-00-1920
+                                                                       777885567
+ANOTHER ONE:
+STANDARD CAPTIONED OUTPUT? Yes//   (Yes)
+Include COMPUTED fields:  (N/Y/R/B): NO//  - No record number (IEN), no Computed
+ Fields
+DISPLAY AUDIT TRAIL? No//   NO
+
+NAME: COYOTE,WILEY                      SEX: FEMALE
+  DATE OF BIRTH: 00/00/1920             CHECK FOR DUPLICATE: YES
+  SERVICE CONNECTED?: NO                PERIOD OF SERVICE: OTHER OR NONE
+  PRIMARY ELIGIBILITY CODE: GENERAL ELIGIBILITY
+  PRIMARY LONG ID: 1234567899           PRIMARY SHORT ID: 7899
+ELIGIBILITY: GENERAL ELIGIBILITY        LONG ID: 1234567899
+  SHORT ID: 7899
+  NAME COMPONENTS: 2                    TYPE: GENERAL ELIGIBILITY
+  NATIONAL ID: 1234567899               VETERAN (Y/N)?: NO
+
+
+
+Select PATIENT NAME:
+
+
+
+
+Select OPTION: INQUIRE TO FILE ENTRIES
+
+
+
+OUTPUT FROM WHAT FILE: PATIENT// IHS PATIENT    (16 entries)
+Select PATIENT NAME:
+  COYOTE,WILEY                              F 00-00-1920
+                                                                       777885567
+ANOTHER ONE:
+STANDARD CAPTIONED OUTPUT? Yes//   (Yes)
+Include COMPUTED fields:  (N/Y/R/B): NO//  - No record number (IEN), no Computed
+ Fields
+DISPLAY AUDIT TRAIL? No//   NO
+
+NAME: COYOTE,WILEY                      DATE ESTABLISHED: MAR 29, 2010
+  ESTABLISHING USER: DEWAYNE,ROBERT
+HEALTH RECORD FAC: PRINCE HAMZAH HOSPITAL
+  HEALTH RECORD NO.: 777885567
+        </pre>
+        <p>Time to edit the patient registration routine so that it would register patients as desired:</p>
+        <p>Change line 36 in DGREG from:</p>
+        <pre>
+.. S DIC("DR")=".02;.03;994;.301///N;391///VISTA OFFICE EHR;1901///N;.09"
+        </pre>
+        <p>to:</p>
+        <pre>
+.. S DIC("DR")=".02;.03;994;.301///N;391///GENERAL ELIGIBILITY;1901///N;400000000"
+        </pre>
+        <p>The result when using DGREG:</p>
+        <pre>
+Select OPTION: inqUIRE TO FILE ENTRIES
+
+
+
+OUTPUT FROM WHAT FILE: PATIENT//
+Select PATIENT NAME:
+  DUCK,DONALD                               M 00-00-1950
+                                                                       777885568
+ANOTHER ONE:
+STANDARD CAPTIONED OUTPUT? Yes//   (Yes)
+Include COMPUTED fields:  (N/Y/R/B): NO//  - No record number (IEN), no Computed
+ Fields
+DISPLAY AUDIT TRAIL? No//   NO
+
+NAME: DUCK,DONALD                       SEX: MALE
+  DATE OF BIRTH: 00/00/1950             CHECK FOR DUPLICATE: YES
+  SERVICE CONNECTED?: NO                PERIOD OF SERVICE: OTHER OR NONE
+  PRIMARY ELIGIBILITY CODE: GENERAL ELIGIBILITY
+  PRIMARY LONG ID: 1231231234           PRIMARY SHORT ID: 1234
+LOG IN DATE/TIME: MAR 29, 2010@16:58    STATUS: APPLICATION WITHOUT EXAM
+  TYPE OF BENEFIT APPLIED FOR: HOSPITAL
+  FACILITY APPLYING TO: PRINCE HAMZAH HOSPITAL
+  WHO ENTERED 10/10: DOCTOR,TEN         ACTIVE: ACTIVE
+  TYPE OF CARE APPLIED FOR: ALL OTHER
+  REGISTRATION ELIGIBILITY CODE: GENERAL ELIGIBILITY
+  ELIG VERIFIED AT REGISTRATION: NO     SC AT REGISTRATION: NO
+  NEED RELATED TO OCCUPATION: NO        NEED RELATED TO AN ACCIDENT: NO
+ELIGIBILITY: GENERAL ELIGIBILITY        LONG ID: 1231231234
+  SHORT ID: 1234
+  NAME COMPONENTS: 2                    TYPE: GENERAL ELIGIBILITY
+  NATIONAL ID: 1231231234               VETERAN (Y/N)?: NO
+
+
+
+Select PATIENT NAME:
+
+
+
+
+Select OPTION:    INQUIRE TO FILE ENTRIES
+
+
+
+OUTPUT FROM WHAT FILE: PATIENT// ihs patiENT    (17 entries)
+Select PATIENT NAME:
+  DUCK,DONALD                               M 00-00-1950
+                                                                       777885568
+ANOTHER ONE:
+STANDARD CAPTIONED OUTPUT? Yes//   (Yes)
+Include COMPUTED fields:  (N/Y/R/B): NO//  - No record number (IEN), no Computed
+ Fields
+DISPLAY AUDIT TRAIL? No//   NO
+
+NAME: DUCK,DONALD                       DATE ESTABLISHED: MAR 29, 2010
+  ESTABLISHING USER: DOCTOR,TEN
+HEALTH RECORD FAC: PRINCE HAMZAH HOSPITAL
+  HEALTH RECORD NO.: 777885568
+        </pre>
+        <h2>Creation of Arabic Name field</h2>
+        <p>Follow the following steps in Fileman:</p>
+        <pre>
+Select OPTION:    MODIFY FILE ATTRIBUTES
+Do you want to use the screen-mode version? YES// NO
+
+MODIFY WHAT FILE: PATIENT//
+
+
+
+Select FIELD: 400000013
+  Are you adding a new FIELD (the 468TH)? No// Y  (Yes)
+   LABEL: ARABIC NAME
+   FIELD NUMBER: 400000013//
+
+DATA TYPE OF ARABIC NAME: FREE TEXT
+MINIMUM LENGTH: 3
+MAXIMUM LENGTH: 50
+(OPTIONAL) PATTERN MATCH (IN 'X'):
+WILL ARABIC NAME FIELD BE MULTIPLE? No//   (No)
+
+SUBSCRIPT: 1// UJO1
+^-PIECE POSITION: 1//
+IS ARABIC NAME ENTRY MANDATORY (Y/N): NO//   NO
+....
+'HELP'-PROMPT: Answer must be 3-50 characters in length.
+           Replace
+XECUTABLE 'HELP':
+DESCRIPTION:
+  No existing text
+  Edit? NO//
+        </pre>
+        <p>Now, we need to enable display and search of both the National ID and Arabic Name. First we need to create indexes for both of them. To minimize changes to the system, we are going to make an index on the Primary Identifier field, Secondary Identifier field and make a Mnemonic index on the Arabic Name.</p>
+        <pre>
+Select UTILITY OPTION:    CROSS-REFERENCE A FIELD OR FILE
+
+What type of cross-reference (Traditional or New)? Traditional//   TRADITIONAL
+
+MODIFY WHAT FILE: HOSPITAL LOCATION// 2  PATIENT  (17 entries)
+Select FIELD: PRIMARY
+     1   PRIMARY ELIGIBILITY CODE
+     2   PRIMARY LONG ID
+     3   PRIMARY NOK CHANGE DATE/TIME
+     4   PRIMARY SHORT ID
+CHOOSE 1-4: 2  PRIMARY LONG ID
+
+CURRENT CROSS-REFERENCE IS MUMPS 'AHL7' INDEX OF FILE
+
+Choose E (Edit)/D (Delete)/C (Create): CREATE
+WANT TO CREATE A NEW CROSS-REFERENCE FOR THIS FIELD? No// Y  (Yes)
+CROSS-REFERENCE NUMBER: 1//
+Select TYPE OF INDEXING: REGULAR//
+WANT CROSS-REFERENCE TO BE USED FOR LOOKUP AS WELL AS FOR SORTING? Yes//   (Yes)
+INDEX: F// UJOPID
+...
+
+NO-DELETION MESSAGE:
+DESCRIPTION:
+  No existing text
+  Edit? NO// YES
+
+Index by Patient Primary ID.
+DO YOU WANT TO CROSS-REFERENCE EXISTING DATA NOW? y  (Yes)
+...EXCUSE ME, THIS MAY TAKE A FEW MOMENTS...
+
+
+Select UTILITY OPTION:    CROSS-REFERENCE A FIELD OR FILE
+
+What type of cross-reference (Traditional or New)? Traditional//   TRADITIONAL
+
+MODIFY WHAT FILE: PATIENT//
+Select FIELD: primary shORT ID
+
+NO CURRENT CROSS-REFERENCE
+WANT TO CREATE A NEW CROSS-REFERENCE FOR THIS FIELD? No// y  (Yes)
+CROSS-REFERENCE NUMBER: 1//
+Select TYPE OF INDEXING: REGULAR//
+WANT CROSS-REFERENCE TO BE USED FOR LOOKUP AS WELL AS FOR SORTING? Yes//   (Yes)
+INDEX: F// UJOBID
+...
+
+NO-DELETION MESSAGE:
+DESCRIPTION:
+  No existing text
+  Edit? NO// YES
+
+Index by Patient Brief/Short Primary ID.
+
+
+DO YOU WANT TO CROSS-REFERENCE EXISTING DATA NOW? y  (Yes)
+...HMMM, I'M WORKING AS FAST AS I CAN...
+
+
+Select UTILITY OPTION: cross-REFERENCE A FIELD OR FILE
+
+What type of cross-reference (Traditional or New)? Traditional//   TRADITIONAL
+
+MODIFY WHAT FILE: PATIENT//
+Select FIELD: ARABIC NAME
+
+NO CURRENT CROSS-REFERENCE
+WANT TO CREATE A NEW CROSS-REFERENCE FOR THIS FIELD? No// Y  (Yes)
+CROSS-REFERENCE NUMBER: 1//
+Select TYPE OF INDEXING: REGULAR// M
+     1   MNEMONIC
+     2   MUMPS
+CHOOSE 1-2: 1  MNEMONIC
+...
+
+NO-DELETION MESSAGE:
+DESCRIPTION:
+  No existing text
+  Edit? NO// YES
+
+Mnemonic index for Arabic Name.
+
+...SORRY, HOLD ON...
+
+
+Select UTILITY OPTION:
+
+
+
+
+Select OPTION:
+        </pre>
+        <h2>Change Identifiers: Remove SSN and add Primary ID and Arabic Name</h2>
+        <p>The end result is as follows. The name in English, then Arabic, then Sex, then DOB, then Primary Identifier (where that could be a National ID or a chart number), then the chart numbers.</p>
+        <pre>
+   COYOTE,WILEY     والي كايوتي        F     0/0/20   1234567899
+                                                                       777885567
+   DUCK,DONALD      دوناد داك        M     0/0/50   1231231234
+                                                                       777885568
+   MONROE,MARLENE   مارلين مانروى        F   11/23/09    777885562
+                                                                       777885562
+        </pre>
+        <p>The changes are only in 1 routine: AUPNLKID.</p>
+        <p>Change Line 8 from:</p>
+        <pre>
+I $D(DIQUIET) S ^TMP("DILIST",$J,"IHS",DICOUNT)=$P(^(0),U,2)_" "_$E($P(^(0),U,3),4,5)_"-"_$E($P(^(0),U,3),6,7)_"-"_(1700+$E($P(^(0),U,3),1,3))_" "_$J($P(^(0),U,9),9) ;Y2000
+        </pre>
+        <p>to:</p>
+        <pre>
+I $D(DIQUIET) S ^TMP("DILIST",$J,"IHS",DICOUNT)=$P(^(0),U,2)_" "_$$DOB^DPTLK1(Y,1)_" "_$P($G(^(.36)),U,3) ;//SMH Sex + DOB + Primary ID
+        </pre>
+        <p>Line 10 from:</p>
+        <pre>
+K AUPNA I '$D(DIQUIET) NEW % S %=$P(^(0),U,2)_" "_$E($P(^(0),U,3),4,5)_"-"_$E($P(^(0),U,3),6,7)_"-"_(1700+$E($P(^(0),U,3),1,3))_" "_$J($P(^(0),U,9),9) S AUPNA(1)=%,AUPNA(1,"F")="?43" ;Y2000 - display 4 digit year
+        </pre>
+        <p>to:</p>
+        <pre>
+K AUPNA I '$D(DIQUIET) S AUPNA(1)=$P(^(0),U,2)_" "_$J($$DOB^DPTLK1(Y,1),10)_" "_$J($P($G(^(.36)),U,3),12),AUPNA(1,"F")="?43" ;//smh Sex + DOB + Primary ID in 12 sp
+        </pre>
+        <p>Line 12 from:</p>
+        <pre>
+I '$D(DIQUIET) S AUPNA(1)=$$CWAD(Y)_AUPNA(1),AUPNA(1,"F")="?37"
+        </pre>
+        <p>to:</p>
+        <pre>
+I '$D(DIQUIET) S AUPNA(1)=$G(^("UJO1"))_" "_$$CWAD(Y)_AUPNA(1),AUPNA(1,"F")="?20" ;//smh - Arabic Name + CWAD + above
+        </pre>
+        <h2>Enabling searching for patients by Arabic Name and by National ID</h2>
+        <p>Searching for Arabic Names should work out of the box since the Mnemonic index should take care of that. However, it turns out that there is an input transform in AUPNLK1I that is present to capitalize letters that is garbling the user input (due to how Mumps operates with ASCII encoding cp1256). In order to fix that, the following change needs to be made:</p>
+        <p>Change Line 21 from:</p>
+        <pre>
+I AUPX?.E1L.E F AUPI=1:1:$L(AUPX) S:$E(AUPX,AUPI)?1L AUPX=$E(AUPX,0,AUPI-1)_$C($A(AUPX,AUPI)-32)_$E(AUPX,AUPI+1,$L(AUPX))
+        </pre>
+        <p>to:</p>
+        <pre>
+S AUPX=$$UP^XLFSTR(AUPX) ;//smh - proper English capitalization using API
+        </pre>
+        <p>Now, searching using Arabic works:</p>
+        <pre>
+VA FileMan 22.0
+
+
+Select OPTION: inqUIRE TO FILE ENTRIES
+
+
+
+OUTPUT FROM WHAT FILE: PATIENT//
+Select PATIENT NAME: مار
+لين مانروى
+  MONROE,MARLENE    مارلين مانروى        F   11/23/09    777885562
+                                                                       777885562
+        </pre>
+        <p>To enable searching by National ID (or any expression designated as a Primary ID), add a line after line 35 in AUPNLK1I:</p>
+        <pre>
+PHONE I DIC(0)["M",AUPX?.NP S AUPREFS=AUPREFS_",AZVWVOE" ;**GFT/VW
+        </pre>
+        <p>New line</p>
+        <pre>
+NID I DIC(0)["M" S AUPREFS=AUPREFS_",UJOPID,UJOBID" ;//SMH/UJO - Primary Long ID, Primary Short ID
+        </pre>
+        <p>Now searching by Primary Long ID or Primary Short ID works:</p>
+        <pre>
+Select PATIENT NAME: 1234567899
+  COYOTE,WILEY      والي كايوتي        F     0/0/20   1234567899
+                                                                       777885567
+ANOTHER ONE: 7899
+  COYOTE,WILEY      والي كايوتي        F     0/0/20   1234567899
+                                                                       777885567
+        </pre>
+        <h2>Change the registration process to include Arabic Name as part of the questions</h2>
+        <p>Change line 36 in DGREG to say:</p>
+        <pre>
+. . S DIC("DR")=".02;.03;994;.301///N;391///GENERAL ELIGIBILITY;1901///N;400000000;400000013" ; //smh
+        </pre>
+        <p>Now, here's the registration:</p>
+        <pre>
+Select PATIENT NAME: GOOSE,GOOFY
+   ARE YOU ADDING 'GOOSE,GOOFY' AS A NEW PATIENT (THE 19TH)? No// Y  (Yes)
+Enter complete middle name if known or press <return> to add as entered: :
+
+   ...adding new patient
+   PATIENT SEX: F  FEMALE
+   PATIENT DATE OF BIRTH: 1989  (1989)
+   PATIENT MULTIPLE BIRTH INDICATOR:
+   PATIENT NATIONAL ID: 1233455678
+   PATIENT ARABIC NAME: جوس,جوفي
+HEALTH RECORD NO.: 777885570// 777885570
+Press ENTER to continue
+        </pre>
+        <h2>Display of Dates in Little Endian Format</h2>
+        <p>The following instructions apply to the Mumps side. CPRS and other GUI applications do their own formatting; localizing these applications requires changing their code. You need the DIDT (named as %DT by the ^DINIT routine) routine found in Fileman 22.1037 or later for some bug fixes for some bugs I reported.</p>
+        <p>Once the changes outlined below are done, the system will display and receive input in dd/mm/yyyy as long as the applications use the VISTA date APIs. The applications that don't use them will display dates typically in the mm/dd/yyyy format.</p>
+        <p>The date support depends on the language file.</p>
+        <p>Set the Default Language in the Kernel to be Arabic:</p>
+        <pre>
+Select OPTION: ENTER OR EDIT FILE ENTRIES
+    
+
+
+INPUT TO WHAT FILE: KERNEL SYSTEM PARAMETERS    (1 entry)
+EDIT WHICH FIELD: ALL// DEFAULT LANGUAGE
+THEN EDIT FIELD:
+
+
+Select KERNEL SYSTEM PARAMETERS DOMAIN NAME: `1  MOH.AMMAN.JO
+DEFAULT LANGUAGE: ARABIC  10     ARABIC
+        </pre>
+        <p>Set Arabic Language Date Formatting Options in the Language File as follows:</p>
+        <pre>
+ID NUMBER: 10                           NAME: ARABIC
+  DATE INPUT: S:$G(%DT)'["I" %DT=$G(%DT)_"I" G CONT^%DT
+  DATE/TIME FORMAT (FMTE): N %T,%R,%F S %T="."_($E($P(Y,".",2)_"000000",1,7)) S %F="3" D F3^DILIBF S Y=%R
+        </pre>
+        <p>Once that's set, Fileman APIs correctly allow input and write output in a proper format using the Language file.</p>
+        <p>The other API in Vista that is extensively used for dates is in the Kernel's XLFDT routine. It does not check (currently) DUZ("LANG") in order to do proper processing. I made an edit to the routine to give it this support (just an additional one line, shown in bold).</p>
+        <p>Before edit (T2^XLFDT):</p>
+        <pre>
+T2 S %T="."_$E($P(Y,".",2)_"000000",1,7)
+ D FMT^XLFDT1 Q %R
+        </pre>
+        <p>After edit:</p>
+        <pre>
+T2 <strong>Q:($G(DUZ("LANG"))&gt;1) $$OUT^DIALOGU(Y,"FMTE",%F) ; smh – support for intl dates</strong>
+ S %T="."_$E($P(Y,".",2)_"000000",1,7)
+ D FMT^XLFDT1 Q %R
+        </pre>
+        <p>Here's the end result:</p>
+        <pre>
+Select PATIENT NAME: THE CAT,FELIX
+   ARE YOU ADDING 'THE CAT,FELIX' AS A NEW PATIENT (THE 20TH)? No// Y  (Yes)
+Enter complete middle name if known or press <return> to add as entered: :
+
+   ...adding new patient
+   PATIENT SEX: M  MALE
+   PATIENT DATE OF BIRTH: <strong>23/11/88</strong>  (NOV 23,1988)
+   PATIENT MULTIPLE BIRTH INDICATOR:
+   PATIENT NATIONAL ID: 2345678900
+   PATIENT ARABIC NAME: القط,فيلكس
+HEALTH RECORD NO.: 777885571// 777885571
+Press ENTER to continue
+
+Please verify or update the following information:
+
+HEALTH RECORD NO.: 777885571// 777885571
+MOTHER'S MAIDEN NAME:
+PLACE OF BIRTH [CITY]:
+PLACE OF BIRTH [STATE]:
+Select ALIAS:
+
+THE CAT,FELIX                                                    <strong>23/11/88</strong>
+=============================================================================
+               COORDINATING MASTER OF RECORD: NOT LISTED
+ Address: STREET ADDRESS UNKNOWN        Temporary: NO TEMPORARY ADDRESS
+         UNK. CITY/STATE
+
+  County: UNSPECIFIED                     From/To: NOT APPLICABLE
+   Phone: UNSPECIFIED                       Phone: NOT APPLICABLE
+  Office: UNSPECIFIED
+    Cell: UNSPECIFIED
+  E-mail: UNSPECIFIED
+Bad Addr:
+
+ Confidential Address:                      Confidential Address Categories:
+         NO CONFIDENTIAL ADDRESS
+ From/To: NOT APPLICABLE
+
+    POS: OTHER OR NONE                    Claim #: UNSPECIFIED
+  Relig: UNSPECIFIED                          Sex: MALE
+   Race: UNANSWERED                     Ethnicity: UNANSWERED
+Enter RETURN to continue or '^' to exit:
+
+THE CAT,FELIX                                                    <strong>23/11/88</strong>
+=============================================================================
+               COORDINATING MASTER OF RECORD: NOT LISTED
+
+Primary Eligibility: GENERAL ELIGIBILITY (NOT VERIFIED)
+Other Eligibilities:
+      Unemployable: NO
+
+Status      : PATIENT HAS NO INPATIENT OR LODGER ACTIVITY IN THE COMPUTER
+
+Future Appointments: NONE
+
+Remarks:
+
+Date of Death Information
+     Date of Death:
+     Source of Notification:
+     Updated Date/Time:
+     Last Edited By:
+
+Enter RETURN to continue or '^' to exit:
+
+THE CAT,FELIX                                                    <strong>23/11/88</strong>
+=============================================================================
+               COORDINATING MASTER OF RECORD: NOT LISTED
+
+Do you want to enter Patient Data? Yes//   (Yes)
+              PATIENT DEMOGRAPHIC DATA, SCREEN <1>
+THE CAT,FELIX; 2345678900                                   GENERAL ELIGIBILITY
+===============================================================================
+                                                          Reg Dt:
+
+[1]    Name: THE CAT,FELIX                  SS: --
+        DOB: <strong>23/11/88</strong>
+     Family: THE CAT                       HRN: 777885571    Sex: MALE
+      Given: FELIX                   [2] Alias:  No alias entries on file 
+     Middle:
+     Prefix:
+     Suffix:
+     Degree:
+[3] Remarks: NO REMARKS ENTERED FOR THIS PATIENT
+[4] Permanent Address:                  [5] Temporary Address:
+         STREET ADDRESS UNKNOWN                 NO TEMPORARY ADDRESS
+         UNK. CITY/STATE
+
+   County: UNANSWERED                      County: NOT APPLICABLE
+    Phone: UNANSWERED                       Phone: NOT APPLICABLE
+   Office: UNANSWERED                     From/To: NOT APPLICABLE
+ Alt Ph:
+ Bad Addr:
+RET to CONTINUE, 1-5 or ALL to EDIT, ^N for screen N or '^' to QUIT:
+        </pre>
+      </div>
+  </body>
+</html>

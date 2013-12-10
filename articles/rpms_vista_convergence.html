@@ -1,0 +1,118 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RPMS and VISTA: Can they be converged?</title>
+    <link rel="stylesheet" href="../css/foundation.min.css" />
+    <link rel="stylesheet" href="../css/app.css" />
+  </head>
+  <body>
+      <div class="large-12 columns">
+          <h1>RPMS and VISTA: Can they be converged?</h1>
+          <div class="panel">
+            <h5>Prepared by Sam Habiel, Pharm.D.; Director of Technology; VISTA Expertise Network; Seattle, WA</h5>
+          </div>
+          <p>Resource Patient Management System (RPMS) is a system that has developed in parallel to VISTA by the Indian Health Service (IHS), an agency of Health and Human Services. RPMS has been developed to assist IHS with its mission “to raise the physical, mental, social, and spiritual health of American Indians and Alaska Natives to the highest level” under Article I Section 8 of the US Constitution. RPMS is based by choice on the Decentralized Hospital Computer Program (DHCP) infrastructure and by and large follows the same rules for development as VISTA (formerly DHCP) code. However, whereas RPMS started out as a mainly Outpatient system, VISTA started out as a strictly Inpatient System; and in addition, RPMS was made to treat all kinds of patients, whereas DHCP focused on veterans, mostly male. Thus at the outset, around 1986, RPMS clinical applications markedly differed from DHCP's.</p>
+          <h2>A brief history of RPMS</h2>
+          <p>RPMS has a longer history than VISTA. Development of its first precursor (Health Information System—HIS)  was started in 1967 by Dr. Ted Garrett at Bell Aerosystems. HIS was renamed to Patient Care Information System (PCIS) when it was moved to IHS servers in Albuquerque in the 1970's. PCIS consisted of a COBOL program running against IBM Model 204 database and followed a problem oriented medical record. Physicians filled in encounter forms which were entered by clerks into the mainframe; health summaries were printed and mailed back to the clinic. PCIS consisted of the following components (printed on a health summary):</p>
+          <ul>
+            <li>Demographics</li>
+            <li>Problem List</li>
+            <li>Lab Results</li>
+            <li>Dental</li>
+            <li>Behavioral Health</li>
+            <li>Community Health Representatives/Village Aides</li>
+            <li>Measurements</li>
+            <li>Immunizations and Skin Test</li>
+            <li>Diagnoses</li>
+            <li>Medications</li>
+            <li>Health Maintenance Reminders</li>
+          </ul>
+          <p>In 1983, a committee of Information System Center representatives from the 10 regions met and decided on modernizing PCIS under the impetus of a Health Resources and Services Administration (HRSA) directive to find a cost accounting system for the agency. Marty Ivers presented the DHCP infrastructure (a data dictionary-based approach to abstraction of medical records found in Fileman) as the one to adopt. Thus RPMS development started. RPMS initially consisted of PCIS, which was now branded as the Patient Care Component (PCC) of RPMS. RPMS was first deployed in the Cherokee Hospital (ironically, a site that never ran PCIS) in 1987. By the time it was deployed, it contained Registration and Outpatient Pharmacy in addition to PCC. From Cherokee, inpatient functions (ADT and Inpatient Pharmacy) were added to RPMS from DHCP to help implement it in the Alaska Native Medical Center hospital.</p>
+          <h2>VISTA and RPMS swapping code</h2>
+          <p>IHS and the VA worked extensively together on sharing modules between VISTA and RPMS. RPMS, as described above, started with the infrastructure packages (Kernel, Fileman, Mailman, etc.). RPMS to this day stays very close to all the VISTA infrastructure packages. In addition, most basic clinical packages in RPMS came from the VA (Pharmacy, Lab, Radiology). In the mid-90s the VA took the PCC code and branded it as the Patient Care Encounter (PCE). Also in the mid-90s, they took the Problem List from RPMS. Unlike RPMS imports of VISTA code, which strived to stay as close to the VA code as possible, the VA heavily modified (and still does) the code from RPMS when it was imported into VISTA. And thus when PCC and Problem List were imported in VISTA, they essentially became different packages. More on this below.</p>
+          <p>RPMS uses the same Lexicon and code sets, and it uses the same National Drug Data from the VA, all of which were imported in the 1990s.</p>
+          <p>From 2002-2004, RPMS used CPRS (the VISTA clinician GUI) code to construct their own clinician GUI.</p>
+          <p>In the late 2000s, VISTA took RPMS code for Pharmacy Point of Sale billing and Women's Health and modified it to run on VISTA.</p>
+          <p>Going the other way, IHS ,with the cooperation of the VA, implemented VISTA Imaging and BCMA unmodified on RPMS in the same period (late 2000s). This was done for VISTA Imaging for regulatory reasons (as it is classified as a Medical Device by the FDA and cannot be modified unless you obtain new approvals); but for BCMA it was done for practical reasons: IHS has a very small number of hospitals, most of whom have less than 20 beds—it doesn't make sense for IHS to shoulder the burden of maintaining the software. As of today, BCMA has not been deployed in IHS beyond pilot sites.</p>
+          <h2>Why Converge?</h2>
+          <p>This question is bound to be asked: why converge VISTA with RPMS? Why unify the code bases? To combine the strengths of VISTA and RPMS. For example, RPMS does a much better job at Outpatient workflows than VISTA; on the other hand, VISTA is much better at Inpatient workflows. RPMS knows about women and children; in VISTA they largely don't exist. Unifying VISTA and RPMS into a superset will enable us to use the same system for different settings. It will also decrease the duplicate development efforts of IHS and VA in addressing similar needs.</p>
+          <h2>Convergence Categories</h2>
+          <p>For the purposes of this analysis, when numbers of differences are cited, they are approximate as they are done using a text searcher for comments inside of routines that contain IHS modifications.</p>
+          <p>The counts are done against an RPMS patched up to 11/2010 as a sample recent database.</p>
+          <p>The command to get the number of routines is: <code>ls {namespace}* | wc -l</code></p>
+          <p>The command to get the number of modified routines is:
+          <code>grep -c IHS {namespace}* | grep -v 0$ | wc -l</code></p>
+          <h2>Infrastructure</h2>
+          <p>The infrastructure supporting VISTA and RPMS is largely the same (with one small exception for RPMS—see below). IHS strives to keep in line with VA patches, and thus is aware of the responsibility of re-applying their modifications to infrastructure packages if they change.</p>
+          <p>The exception for RPMS is that it adds two packages to the infrastructure: IHS Patient Dictionaries, and IHS Pointers Dictionaries . The former are the patient data dictionaries (including the IHS patient file and the centerpiece of PCC—the visit files) and the latter is actually a set of reference files for RPMS. In reality, both of these applications are clinical in nature, yet they are treated in the RPMS library as infrastructure packages. People attempting to do convergence need to be mindful that many foundational dictionaries in RPMS are located in these packages.</p>
+          <h3>Case Study: Fileman</h3>
+          <p>Fileman today is modified by IHS mainly to allow for “soft” globals, i.e. globals that contain symbol table variables—in other words, globals whose location can be resolved at runtime. This is how division handling is largely implemented in RPMS: by subscripting the Fileman files with DUZ(2) (the institution number). Previous modifications to Fileman (to which IHS has contributed greatly) have all been folded into VA Fileman. Currently, VA Fileman 22.2 re-unifies Fileman between the VA and IHS again.</p>
+          <h3>Case Study: KIDS</h3>
+          <p>KIDS has been modified as follows:</p>
+          <ul>
+            <li>XPDIA3 to fix a bug in KIDS (this has been absorbed back into VISTA KIDS).</li>
+            <li>XPDIGP to fix a bug related to Caché reads (which has been fixed in another way in VISTA).</li>
+            <li>XPDIL has the same fix as XPDIGP</li>
+            <li>XPDUTL has been modified to allow patches greater than 3 digits long at PATCH+1:
+                <ul>
+                    <li>VISTA: <code>Q:X'?1.4UN1"*"1.2N1"."1.2N.1(1"V",1"T").2N1"*"1.6N 0</code></li>
+                    <li>RPMS: <code>Q:X'?1.4UN1"*"1.2N1"."1.2N.1(1"V",1"T").2N1"*"1.3N 0</code></li>
+                </ul></li>
+           </ul>
+           <p>As we can see from this, converging KIDS is going to be very easy. It's likely in addition to this that Fileman data dictionaries for KIDS related files have been modified as well, but the modifications are likely to be minor to allow for longer patch numbers for RPMS.</p>
+           <h2>VISTA derived applications in RPMS, heavily modified.</h2>
+           <p>This class of applications in general is moderately difficult to difficult to converge as there has been a definite fork in the code. Nonetheless, VISTA and RPMS code share a common ancestor.</p>
+           <p>Such applications include: RPMS Outpatient Pharmacy, Lab, Scheduling, Adverse Reaction Tracking, TIU.</p>
+           <ul>
+             <li>RPMS Outpatient Pharmacy has 111/430 routines that have been modified.</li>
+             <li>Adverse Reaction Tracking has 19/116 routines that have been modified.</li>
+             <li>Lab has 819/1132 routines that have been modified.</li>
+             <li>Scheduling has 106/403 routines that have been modified.</li>
+             <li>In TIU, 78/367 TIU routines have been modified.</li>
+           </ul>
+           <p>In addition to the modifications cited above, Outpatient Pharmacy has 176 extension routines in namespace APSP, Lab has 197 extension routines in BLR, and Scheduling has 180 extension routines in BSD, TIU has 69 extension routines in BTIU. This analysis does not include the Fileman data dictionary changes.</p>
+           <p>These applications will take a significant effort to converge. However, converging them is possible in principle.</p>
+           <h2>VISTA derived applications in RPMS, almost identical</h2>
+           <p>These included RPMS Inpatient Pharmacy, Radiology, and Consults.</p>
+           <p>Some statistics:</p>
+           <ul>
+             <li>In Inpatient Pharmacy, 6 of 218 PSJ routines have been modified.</li>
+             <li>In Radiology, 28/344 RA routines have been modified.</li>
+             <li>In Consults, 1/153 GMRC routines have been modified.</li>
+           </ul>
+           <p>These applications can be easily converged.</p>
+           <h2>VISTA derived applications in RPMS, identical</h2>
+           <p>These include BCMA, VISTA Imaging, the Lexicon, ICD/CPT code sets, and the National Drug File. These may contain minor modifications here and there, but they are by and large identical.</p>
+           <h2>RPMS derived applications in VISTA</h2>
+           <p>These include PCE, Problem List, Patient Merge, Women's Health, Pharmacy Point of Sale.</p>
+           <p>At various points, when the VA has taken these applications from RPMS, they have been heavily modified or completely re-written, in addition to being re-namespaced. In many cases, non-compatible changes (between VISTA and RPMS) have been introduced into the data dictionaries when the data dictionaries have originally not been modified at port time (e.g. in PCE).</p>
+           <p>Converging these applications may be possible in packages that are likely to have a low number of VA modifications (e.g. Women's Health) but very hard with PCE and Problem List, where software business rules are significantly different between RPMS and VISTA.</p>
+           <h2>Clinical applications duplicates/conflicts</h2>
+           <p>This list includes the list of RPMS derived applications in VISTA, as they are now considered to be in conflict with RPMS applications. PCC versus PCE, Patient Merge, Women's Health, and Pharmacy Point of Sale were alluded to above.</p>
+           <p>PCC differences with PCE are actually a major issue. PCC differs in business rules and how data is stored from PCE in VISTA. For example, PCC has visit classifications that are not used in the VA; PCC tends to store ALL visit related data (including labs, medications, and hospitalizations) in the Visit files, allowing for emergent applications (see below) to be developed. PCC business rules assume that there are coders checking every encounter; PCE does not know of the existence of coders. PCC tends to aggregate visits together; whereas PCE tends to divide visits into separate sub-visits. All of these differences mean that re-unifying PCC with PCE will prove to be very difficult, and cannot be done just by programmers. It may prove that political differences between IHS and the VA may doom any effort to unify PCC.</p>
+           <p>Other differences include:</p>
+           <ul>
+             <li>RPMS has a vitals package totally separate from VISTA vitals package.</li>
+             <li>RPMS's implementation of Lab Point of Care is based on manual entry with a GUI; the VA's implementation is based on instrument interfacing and involves no manual entry.</li>
+             <li>RPMS has a long history of implementing Taxonomy systems, whereas they are a comparatively more recent innovation in VISTA in the clinical reminders system. Because RPMS includes clinical reminders as part of its version of CPRS, it actually has two taxonomy systems; the IHS one used everywhere in RPMS and the Reminders one just used for CPRS.</li>
+             <li>RPMS' CHS and RCIS tend to mirror the VISTA Fee Basis application.</li>
+             <li>RPMS Record tracking (to track where Charts are at a given point) is different from the VISTA implementation.</li>
+             <li>RPMS contains a Release of Information package; VISTA uses a proprietary package made by DSS.</li>
+             <li>RPMS uses the HL7 engine developed for CHCS, the Department of Defense system. (CHCS is also based on VISTA, but has since considerably diverged.) VISTA has its own HL7 systems.</li>
+           </ul>
+           <p>Depending on the application, convergence is possible (Lab Point of Care; HL7) or near impossible (PCC versus PCE).</p>
+           <h2>Applications that don't have any commonality between VISTA and RPMS</h2>
+           <p>RPMS contains packages that don't have a VISTA equivalent, among them: Day Surgery, CIA and BMX brokers, CPHAD (a data collection system for public health outreach), Reproductive Health data elements, and a Well Child module.</p>
+           <p>VISTA contains  packages that are not part of RPMS including: Clinical Procedures and the Shift Handoff tool.</p>
+           <p>These applications are theoretically easy to port if they don't have a heavy reliance on PCC.</p>
+           <h2>Emergent Applications</h2>
+           <p>These are applications that can emerge as a result of the design of the database. Because of RPMS's Visit file structures, query tools such as VGEN/PGEN, QMAN, and iCare can be used to easily query patient data; something that to this day cannot be easily done in VISTA.</p>
+           <p>VISTA has a small billing module that performs about half of the billing workflow; RPMS has a full billing and accounts receivable module. This module uses the Visit file structure in order to suck all the services into one bill which the biller can then edit.</p>
+           <p>Emergent applications are arguably the hardest to port as they depend on all the other pieces being ported.</p>
+           <h2>So what now?</h2>
+           <p>I have outlined in this paper the commonality and differences between VISTA and RPMS and how hard it is to unify them. Despite the difficulty of porting some applications, let me submit that it is actually possible. This is not the case with, for example, Epic, since it uses completely different data structures.</p>
+      </div>
+  </body>
+</html>
