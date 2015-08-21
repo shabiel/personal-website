@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">    
+<head>
+  <meta charset="utf-8">
+  <title>Cryptography in VISTA</title>
+  <link rel="stylesheet" href="css/reveal.min.css">
+  <link rel="stylesheet" href="css/theme/night.css" id="theme"> 
+  <!--Add support for earlier versions of Internet Explorer -->
+  <!--[if lt IE 9]>
+  <script src="lib/js/html5shiv.js"></script>
+  <![endif]-->
+  <style type="text/css">
+  section { text-align: left; }
+  h1 { line-height: 1.1em; }
+  .reveal pre { font-size: 0.7em; }
+  </style>
+</head>
+
+<body>
+  <div class="reveal" data-background="#ff0000" >
+	<!-- Wrap all slides in a single "slides" class -->
+	<div class="slides">
+	  <section data-markdown data-separator="---\n" data-vertical="--\n">
+	  <script type="text/template" >
+
+# Cryptography in VISTA
+
+ <!-- .slide: data-background="/filesystem/reveal.js/IMG_0411.jpg" -->
+
+Sam Habiel
+
+sam.habiel@vistaexpertise.net
+
++Sam Habiel on Google+.
+
+---
+
+## What is Cryptography?
+
+Cryptography is the practice and study of techniques for secure communication in the presence of third parties (called adversaries).
+
+
+#### Includes the following aspects:
+
+ * Confidentiality (I can't see what the doctor is sending even if I can see the communication)
+ * Data Integrity (Did somebody change my note?)
+ * Authentication (Who am I?)
+ * Non-repudiation (I didn't write that! Or Did I?)
+
+---
+
+## Cypto Primitives
+
+ * Encryption
+ * Hashing
+
+--
+
+ <!-- .slide: data-background="#003D00" -->
+
+## Encryption
+ Obfuscate data for sending to another entity with the intention of defeating
+ interception.
+
+ * Types
+ > * Symmetric
+ > * Asymmetric
+
+--
+
+ <!-- .slide: data-background="#003D00" -->
+
+## Hashing
+ Irreversibly convert data to a short "digest".
+
+ Typical Uses
+
+ * Checksumming data
+ * Protecting passwords at rest or in transit
+ * Creating "signatures" for data to be encrypted
+ > * Message Authentical Code (MAC)
+
+--
+
+ <!-- .slide: data-background="#003D00" -->
+ 
+## Digital Signatures
+ Combination of encryption and hashing send along with an encrypted document
+ to assert to the decrypter that the decrypted document is authentic.
+
+--
+
+ <!-- .slide: data-background="#003D00" -->
+
+## Best Reference for myself...
+ 
+ <https://www.cs.auckland.ac.nz/~pgut001/tutorial/>
+
+---
+
+## Hashing in VISTA
+
+ * Access Code/Verify Code Hash
+ * Electronic Signature Hash
+ > * Oopssie... This is actually an encryption.
+
+--
+
+ <!-- .slide: data-background="#003D00" -->
+
+## AC/VC Hash
+
+ XUSHSH
+
+ * OV -> Empty
+ * WV -> Not really a hash. A reversible obfuscator (i.e. encryption)
+ * VX -> MD5 (wow! a standard hash!)
+ * FOIA -> Empty
+
+--
+
+ <!-- .slide: data-background="#003D00" -->
+
+## VA XUSHSH
+
+The VA XUSHSH runs an loop on some pre-defined garbage text based on the position and ascii value of an input character. After each character, the hash is partially discarded and the next part is used as an Input Vector for the next character hash. Actual output can never be traced back to an input because of the lossy character of the operation. I.e. it is a real hash.
+
+--
+
+ <!-- .slide: data-background="#003D00" -->
+
+## WV HASH (Old VA Hash)
+
+```
+EN(X) ; GENERIC HASHING ENCRYPTION -- USES ASCII ENCODING
+ N %HASH S %HASH=""
+ N %CHAR
+ F %CHAR=1:1:$L(X) D
+ . I %CHAR#2 S %HASH=$A(X,%CHAR)_%HASH
+ . E  S %HASH=%HASH_$A(X,%CHAR)
+ Q %HASH
+```
+
+"Hashing encryption" is an oxymoron.
+
+--
+
+ <!-- .slide: data-background="#003D00" -->
+
+## VX HASH (Kernel MD5)
+
+```
+ W $$MAIN^XUMF5BYT($$HEX^XUMF5AU($$MD5R^XUMF5AU("The quick fox")))
+```
+
+--
+
+ <!-- .slide: data-background="#003D00" -->
+
+## NB: Other OSS M hashing implementations
+
+ * MD5: <https://github.com/pkoper/juicy-m/blob/master/md5.m>
+ * SHA256: <https://github.com/lparenteau/DataBallet/blob/master/r/digest.m>
+
+If nothing else, they are excellent to see how to implement bit twiddling in M.
+
+--
+
+ <!-- .slide: data-background="#003D00" -->
+
+## Electronic Signatures
+ 
+ * VA - Encryption
+ * VX - MD5 (hash)
+ * OV - VA Routine
+ * WV - None
+ * FOIA - None
+
+---
+
+## Encryption
+
+ There are three areas where VISTA encrypts data:
+
+ * Electronic Signatures (discussed above)
+ * Transmission of data from CPRS to Server (AC/VC/CONTEXT)
+ * TIU Notes and other packages that do similar encrypting (notably, Radiology)
+ * DEA Digital Signature
+
+--
+
+ <!-- .slide: data-background="#003D00" -->
+
+## CPRS Server communication
+ 
+ * AC/VC
+ * Context
+ * NOT! Electronic Signature (!??@$@%%*)
+
+ Uses a Caesar cipher: character replacement.
+
+--
+
+## CPRS Server communication (cont)
+
+ <!-- .slide: data-background="#003D00" -->
+
+```
+ENCRYP(S) ;RWF 2/5/96
+ N %,ASSOCIX,IDIX,ASSOCSTR,IDSTR
+ S ASSOCIX=$R(20)+1                     ;get associator index
+ F  S IDIX=$R(20)+1 Q:ASSOCIX'=IDIX     ;get different identifier index
+ S ASSOCSTR=$P($T(Z+ASSOCIX),";",3,9)   ;get associator string
+ S IDSTR=$P($T(Z+IDIX),";",3,9)         ;get identifier string
+ ;translated result
+ Q $C(IDIX+31)_$TR(S,IDSTR,ASSOCSTR)_$C(ASSOCIX+31)
+ ;
+```
+
+--
+
+ <!-- .slide: data-background="#003D00" -->
+
+## CPRS Server communication (cont)
+
+Problems?
+
+ * Key is in the source code
+ * The so called randomization is defeated by sending the 
+   plain text random values along with the data.
+ * The transmission of a known text "OR CPRS GUI CHART", means that we
+   can decrypt this easily.
+
+--
+
+ <!-- .slide: data-background="#003D00" -->
+
+## TIU Notes
+
+Input transforms on several fields encrypts them upon storage.
+
+Output transforms decrypt them.
+
+--
+
+ <!-- .slide: data-background="#003D00" -->
+
+## TIU Notes (cont)
+
+```
+1503 SIGNATURE BLOCK NAME
+1504 SIGNATURE BLOCK TITLE
+1509 COSIGNATURE BLOCK NAME
+1510 COSIGNATURE BLOCK TITLE
+```
+
+```
+IT: S X=$$ENCRYPT^TIULC1(X,1,
+$$CHKSUM^TIULC("^TIU(8925,"_+DA_",""TEXT"")")) 
+K:$L(X)>120!($L(X)<3) X
+```
+
+```
+OT: S Y=$$DECRYPT^TIULC1(Y,1,
+$$CHKSUM^TIULC("^TIU(8925,"_$S(+$G(DA):+DA,+$G(D0):+D0,1:"")
+_",""TEXT"")"))
+```
+--
+
+## TIU Notes (cont)
+
+ <!-- .slide: data-background="#003D00" -->
+
+CHKSUM^TIULC
+```
+CHKSUM(TIUROOT,TIUY) ; Calculates checksum for a record¬                        
+ N TIUI,X S TIUI=0,TIUY=+$G(TIUY)¬                                              
+ F  S TIUI=$O(@TIUROOT@(TIUI)) Q:+TIUI'>0  D¬                                   
+ . S X=$G(@TIUROOT@(TIUI,0))¬                                                   
+ . N TIUJ¬                                                                      
+ . F TIUJ=1:1:$L(X) S TIUY=+$G(TIUY)+(($A(X,TIUJ)*TIUI)*TIUJ)¬                  
+ S TIUI=0¬                                                                      
+ F  S TIUI=$O(^TIU(8925,"DAD",+$P(TIUROOT,",",2),TIUI)) Q:+TIUI'>0  D¬          
+ . I +$$ISADDNDM^TIULC1(+TIUI) Q¬                                               
+ . S TIUY=+$G(TIUY)+$$CHKSUM("^TIU(8925,"_+TIUI_",""TEXT"")",TIUY)¬             
+ Q +$G(TIUY)¬                                                                                                                         ```
+--
+
+## TIU Notes (cont)
+
+ <!-- .slide: data-background="#003D00" -->
+
+```
+ENCRYPT(X,X1,X2) ; Encrypt Text Strings
+ D EN^XUSHSHP
+ Q X
+```
+
+--
+
+## TIU Notes (cont)
+
+ <!-- .slide: data-background="#003D00" -->
+
+ So...
+
+ This is good encryption. It uses an IV of the checksum of the document.
+
+ If the document is changed, the decryption will fail.
+
+--
+
+## TIU Notes (cont)
+
+ <!-- .slide: data-background="#003D00" -->
+
+```
+/es/ DOCTOR MCDUCK, MD
+ENT PHYSICIAN
+Signed: 02/27/2013 09:34
+```
+
+vs
+
+```
+/es/ lks&*(*% *(*&@#$*&
+A#@^*(ssDASDF
+Signed: 02/27/2013 09:34
+```
+
+vs (AES CBC w/ 256 bit blocks)
+
+```
+/es/ bad decrypt
+bad decrypt
+Signed: 02/27/2013 09:34
+```
+---
+
+ <!-- .slide: data-background="red" -->
+
+# DEA OP CS Transmission
+
+ * Public Key Infrastructure
+ * Uses Smart Cards as the second factor of authentication
+ * Functions for Digital Signatures, NOT encryption. The objective is to check that the prescription has not been changed.
+
+--
+
+ <!-- .slide: data-background="#910608" -->
+ 
+# Overview of mechanism
+
+ * Every time you sign an OP CS, you are asked to "sign" a prescription 
+   using a smart card.
+ * Signatures "signs" the controlled substance rx.
+ * When pharmacy processes the prescription, the prescription is checked to 
+   see if it was modified in the process of transmission or storage.
+
+--
+
+ <!-- .slide: data-background="#910608" -->
+
+### In detail... (fReview.pas)
+
+ * Get User Alternate Name from VISTA; if Blank, get from card and put in VISTA.
+ * Check PIN Lock (3 tries). If locked, don't continue.
+ * Get data from VISTA for signatures
+ > * Issue Date, Patient Name, Patient Address, Detox #
+ > * Prov Name, Prov Add, DEA #
+ > * Drug Name, Quantity, Directions
+
+--
+
+ <!-- .slide: data-background="#910608" -->
+
+### In detail, cont... (fReview.pas)
+
+ * Hash data and Sign the Hash (XuDigS.pas)
+ * Store the hash and signature on server
+ > * RPC ORWOR1 SIG
+ > * Order #, hash, sig length, "100", DUZ,
+ > * sig as array of 240 bytes each, CRL URL, DFN
+
+--
+
+ <!-- .slide: data-background="#910608" -->
+
+### In the Pharmacy Package
+
+ * CS Rx call PSOPSKIV1 to XUSSPKI...
+ * Verify XUSSPKI sends this to the PKI Server (on the Windows side)
+ > * Send Rx Data
+ > * Send signature
+ >> * Encrypted Hash of Hash
+ >> * Original Hash
+ >> * Public Key
+
+--
+
+ <!-- .slide: data-background="#910608" -->
+
+### PKI Server
+
+ * Decrypt the signature data using the "stapled" public key.
+ * The "data" in the signature is the hash of the prescription data.
+ * The hash is then compared with the hash of the Rx data (hash vs hash)
+ * If it is the same, it is determined that the prescription data has not changed.
+
+--
+
+ <!-- .slide: data-background="#910608" -->
+
+### Misc Info
+ 
+ * Hashed data and components to generate hash are stored in 101.52
+ * Signature is stored in 8980.2 in a flat file keyed by the hash
+ * OpenSSL can replace PKI Server
+
+---
+
+## Closing Remarks (1)
+
+ * AC/VC: The password problem
+ * Point to point encryption absent
+ * Ad-hoc non-standard encryption and hashing
+ * TIU notes are vital to protect as they are the real legal record
+
+--
+
+## Closing Remarks (2)
+
+ What's the incentive to secure VISTA?
+
+ * Is medical data sensitve?
+ * Is medical data private?
+ * Do we have an obligation to ensure privacy?
+ > * Most privacy breaches in healthcare (and those patients care about) are to ones who know them or who may care about them.
+ > * Strengthening security doesn't really help that much with that.
+ * Is VISTA suitable for use in sensitive settings and for sensitive patients?
+ > * DOD, diplomatic, senior civil servants?
+ * Incentive to secure Health data vs Banking data
+
+		</script>
+	  </section>
+	</div>
+  </div>
+  <script src="lib/js/head.min.js"></script>
+  <script src="js/reveal.min.js"></script>
+
+  <script>
+      // Required, even if empty.
+      Reveal.initialize({
+	    transition: "linear",
+		history: true,
+  		dependencies: [
+		  { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+		  { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+		  { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+  		]
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">    
+<head>
+  <meta charset="utf-8">
+  <title>RxNorm for VISTA</title>
+  <link rel="stylesheet" href="css/reveal.min.css">
+  <link rel="stylesheet" href="css/theme/default.css" id="theme"> 
+  <!--Add support for earlier versions of Internet Explorer -->
+  <!--[if lt IE 9]>
+  <script src="lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+  <div class="reveal" data-background="#ff0000" >
+	<!-- Wrap all slides in a single "slides" class -->
+	<div class="slides">
+	  <section data-markdown data-separator="---">
+	  <script type="text/template" >
+# RxNorm for VISTA
+
+Sam Habiel
+
+sam.habiel@vistaexpertise.net
+
+For cat pictures and links, follow @givethgoodmumps
+
+---
+
+## What is RxNorm?
+
+ RxNorm is a standardized vocabulary set for Drugs in the 
+ United States. The goal of RxNorm is drug nomenclature 
+ standardization and systems interoperability. More information 
+ on RxNorm can be found at 
+ <http://www.nlm.nih.gov/research/umls/rxnorm/>.
+
+---
+
+- RxNorm is necessary for interoperability with other systems.
+- If you use VISTA alone without having to talk to any other system, then you don't need RxNorm. 
+- However, if you perform external drug interactions, send CCDA documents, or archive patient records for CCR, you are going to need RxNorm. 
+- For Meaningful Use, you are required to have RxNorm for various purposes. 
+
+---
+
+<https://trac.opensourcevista.net/wiki/RxNormForVista>
+
+---
+
+- This release contains Fileman files corresponding to most of public domain RxNorm (archived data is not loaded into VISTA).
+- It also contains utilities for querying RxNorm for specific information and a utility to add drugs to the drug files automatically based on an RxNorm number.
+
+---
+
+- This release is licensed under  AGPL v3.0 and is free as in free beer. 
+- A commercial license for commercial entities running VISTA can be obtained for $2000 per VISTA instance. 
+- Support costs for monthly updates are $100/month per VISTA instance both for AGPL and commercial users.
+
+		</script>
+	  </section>
+	</div>
+  </div>
+  <script src="lib/js/head.min.js"></script>
+  <script src="js/reveal.min.js"></script>
+
+  <script>
+      // Required, even if empty.
+      Reveal.initialize({
+	    transition: "linear",
+  		dependencies: [
+		  { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+		  { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+		  { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+  		]
+      });
+  </script>
+</body>
+</html>

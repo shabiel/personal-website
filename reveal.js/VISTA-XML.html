@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">    
+<head>
+  <meta charset="utf-8">
+  <title>XML Package for VISTA</title>
+  <link rel="stylesheet" href="css/reveal.min.css">
+  <link rel="stylesheet" href="css/theme/default.css" id="theme"> 
+  <!--Add support for earlier versions of Internet Explorer -->
+  <!--[if lt IE 9]>
+  <script src="lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+  <div class="reveal" data-background="#ff0000" >
+	<!-- Wrap all slides in a single "slides" class -->
+	<div class="slides">
+	  <section data-markdown data-separator="---">
+	  <script type="text/template" >
+# MXML Package for VISTA
+
+Sam Habiel
+
+sam.habiel@vistaexpertise.net
+
+For cat pictures and links, follow @givethgoodmumps
+
+---
+
+## What is it?
+
+Upgrade to the VISTA XML Package.
+
+## Where is it?
+
+<https://github.com/shabiel/VISTA-xml-processing-utilities>
+
+## License
+
+Apache 2.0
+
+---
+
+## Enhancements
+
+- XPATH Support
+- XML Templating
+- XML Authoring Tools
+- Bug fixes
+  - XML Entities in odd places now don't break import.
+  - Import from Filesystem now works on GT.M.
+
+---
+
+## Important APIs
+
+- SET DOCHAND=$$EN^MXMLDOM("path or global","flags: W: Don't validate; D: Debug")
+- SET NODE=$$EN^MXMLPATH([.RTN],DOCHAND,"/path/to/node or @attribute [filter code (subset supported)]")
+- $$NAME, $$CHILD, $$SIBLING, $$PARENT, $$TEXT^MXMLDOM
+- DO DELETE^MXMLDOM(NODE)
+
+---
+
+## Supported XPath Expressions
+
+- element name
+- @attribute name
+- /root/element2
+- /root/element1[n]/element2[n]
+- //element1/element2
+- element[n]
+- element[last()]
+- element[@attribute="value"]
+- element[@attribute]
+- element[childnode="value"]
+
+		</script>
+	  </section>
+	</div>
+  </div>
+  <script src="lib/js/head.min.js"></script>
+  <script src="js/reveal.min.js"></script>
+
+  <script>
+      // Required, even if empty.
+      Reveal.initialize({
+	    transition: "linear",
+  		dependencies: [
+		  { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+		  { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+		  { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+  		]
+      });
+  </script>
+</body>
+</html>
