@@ -28,3 +28,13 @@ pre {
 h1 {
     color: gray;
     }
+
+input:invalid {
+    box-shadow: none; /* FF */
+    outline: 0;       /* IE 10 */
+    border: 2px solid red;
+    }
+
+input:after {
+    content: "AAAA";
+    }
