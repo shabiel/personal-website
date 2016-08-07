@@ -1,0 +1,28 @@
+# env - file to be sourced to create VistA environment
+#
+# This temporary version of the commands to set up the VistA
+# environment assumes that the parent and child use the same
+# version of GT.M.
+
+gtmver=`basename $PWD`
+if [ -d ../parent ] ; then
+   pushd ../parent/$gtmver
+   . ./gtmenv
+   popd
+fi
+
+tmp=`dirname $PWD`
+tmp0="$PWD/o*($PWD/p $PWD/r $tmp/p $tmp/r)"
+
+# If there is an existing $routines, this environment comes before it
+if [ -n "$routines" ] ; then
+  export routines="$tmp0 $routines"
+else
+  export routines="$tmp0"
+fi
+
+# If a gtm.dat exists (vs. gtm.dat.gz) then this a usable environment
+if [ -f $PWD/g/gtm.dat ] ; then export gtmdir=$tmp ; fi
+
+export gtmgbldir=$PWD/g/gtm.gld
+export gtmroutines="$routines $PWD/gtm/libgtmutil.so"

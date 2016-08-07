@@ -1,0 +1,1 @@
+These zip files are the GT.M Acculturation Workshop version 0.9.  Unpack file AcculturationWorkshop.zip and point your browser at the index.html file therein.  ubuntu-14.04_gtmworkshop9.zip contains a virtual machine disk images in vmdk format for the workshop.  KSBVistAPatches.zip is content to be used for one of the exercises in the workshop.

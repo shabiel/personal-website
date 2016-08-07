@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# run - run this instance of VistA
+
+# Get functions and common definitions
+. `dirname $0`/../inc
+
+
+# Set up the environment for VistA
+tmp1=`fullpath`
+pushd $tmp1
+. ./gtmenv
+popd
+rm -rf $myvistatmpdir
+
+cd $tmp1/tmp
+. ../gtm/gtmprofile 1>/dev/null 2>/dev/null
+if [ -n "$1" ] ; then
+  ../gtm/mumps -run $1
+else
+  ../gtm/mumps -dir
+fi

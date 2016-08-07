@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="393" height="198" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <g>
+  <title>Layer 1</title>
+  <rect id="svg_8" height="45.000002" width="146.999998" y="91.750001" x="2.500003" stroke-width="5" stroke="#000000" fill="#FF0000"/>
+  <text id="svg_9" transform="matrix(0.942308, 0, 0, 0.9375, 30.2115, 28.6875)" xml:space="preserve" text-anchor="middle" font-family="Cursive" font-size="14" y="98.183" x="48.593" stroke-width="0" stroke="#000000" fill="#000000">Lab Enhancement</text>
+  <g id="svg_12">
+   <rect id="svg_10" height="45.000002" width="146.999998" y="92.750001" x="245.500003" stroke-width="5" stroke="#000000" fill="#FF0000"/>
+   <text id="svg_11" transform="matrix(0.942308, 0, 0, 0.9375, 50.2095, 48.6875)" xml:space="preserve" text-anchor="middle" font-family="Cursive" font-size="14" y="76.849" x="285.246" stroke-width="0" stroke="#000000" fill="#000000">Pharmacy Enhancement</text>
+  </g>
+  <g id="svg_3">
+   <rect id="svg_1" height="45.000002" width="146.999998" y="0.000001" x="119.000003" stroke-width="5" stroke="#000000" fill="#FF0000"/>
+   <text transform="matrix(0.942308, 0, 0, 0.9375, 10.2115, 8.6875)" xml:space="preserve" text-anchor="middle" font-family="Cursive" font-size="14" id="svg_2" y="20.2337" x="193.45" stroke-width="0" stroke="#000000" fill="#000000">Current Reference</text>
+  </g>
+  <line id="svg_14" y2="94" x2="176.5" y1="93" x1="176.5" stroke-width="5" stroke="#000000" fill="none"/>
+  <line id="svg_15" y2="46" x2="192.5" y1="92" x1="76.5" stroke-width="5" stroke="#000000" fill="none"/>
+  <line id="svg_16" y2="45" x2="192.5" y1="92" x1="320.5" stroke-width="5" stroke="#000000" fill="none"/>
+  <text xml:space="preserve" text-anchor="middle" font-family="Cursive" font-size="14" id="svg_17" y="192.5" x="17.5" stroke-width="0" stroke="#000000" fill="#000000">Adam</text>
+  <text xml:space="preserve" text-anchor="middle" font-family="Cursive" font-size="14" id="svg_18" y="192.5" x="140" stroke-width="0" stroke="#000000" fill="#000000">Ben</text>
+  <text xml:space="preserve" text-anchor="middle" font-family="Cursive" font-size="14" id="svg_19" y="192.5" x="265.5" stroke-width="0" stroke="#000000" fill="#000000">Cathy</text>
+  <text xml:space="preserve" text-anchor="middle" font-family="Cursive" font-size="14" id="svg_20" y="192.5" x="370.5" stroke-width="0" stroke="#000000" fill="#000000">Diane</text>
+  <line id="svg_21" y2="137" x2="68.5" y1="172" x1="17.5" stroke-width="5" stroke="#000000" fill="none"/>
+  <line id="svg_22" y2="136" x2="69.5" y1="176" x1="136.5" stroke-width="5" stroke="#000000" fill="none"/>
+  <line id="svg_23" y2="138" x2="324.5" y1="176" x1="266.5" stroke-width="5" stroke="#000000" fill="none"/>
+  <line id="svg_24" y2="137" x2="325.5" y1="175" x1="363.5" stroke-width="5" stroke="#000000" fill="none"/>
+ </g>
+</svg>

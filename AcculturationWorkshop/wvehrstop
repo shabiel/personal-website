@@ -1,0 +1,10 @@
+#!/bin/bash
+cd `dirname $0`
+source ./env
+./run STOP^ZTMKU <<EOF
+y
+y
+h
+EOF
+sleep 5
+ps -ef | grep mumps | grep -v grep | awk '{print $2}' | xargs kill 2>/dev/null

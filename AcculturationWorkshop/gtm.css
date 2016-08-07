@@ -1,0 +1,274 @@
+@import url("http://fonts.googleapis.com/css?family=Ubuntu:regular,bold,italic,bolditalic");
+@import url("http://fonts.googleapis.com/css?family=Inconsolata:regular");
+span.underline {text-decoration: underline;}
+span.bold {font-weight: bold; }
+span.italic {font-style: italic; }
+span.italicunderline {text-decoration: underline; font-style: italic; }
+BODY {
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	font-size: 10pt;
+}
+P {
+	font-size: 10.0pt;
+	color: #000000;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	margin-top: 10pt;
+	margin-bottom: 10pt;
+}
+H1 {
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	font-variant: normal;
+	font-weight: bold;
+	font-size: 16pt;
+	color: #416119;
+}
+H2 {
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	font-variant: normal;
+	font-weight: bold;
+	color: #416119;
+	font-size: 16pt;
+}
+H3 {
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	color: #416119;
+	font-size: 13pt;
+}
+H4 {
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	color: #416119;
+	font-size: 12pt;
+}
+H5 {
+	font-size: 12pt;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	color: #416119;
+}
+H6 {
+	font-size: 11pt;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	color: #416119;
+}
+PRE {
+	font-family:     Inconsolata, monospace;
+	background-color: #eee;
+	font-size: 11pt; 
+	word-wrap: break-word;
+	white-space: pre-wrap;
+	white-space: -moz-pre-wrap;
+       		
+}
+DT {
+	font-size: 10.0pt;
+	color: #000000;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+}
+
+DIV.table TH, DIV.informaltable TH {
+	background: #D1DAC0;
+	font-size: 9.0pt;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	text-align: left; 
+	border-collapse: collapse;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+	border-left: 1px solid black;	
+}
+DIV.table TD, DIV.informaltable TD {
+	font-size: 8.0pt;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	vertical-align: top;
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	border-bottom: 1px solid black;
+
+}
+
+DIV.table TR:hover, DIV.informaltable TR:hover 
+{ 
+background-color:#E0E0E0;
+} 
+
+DIV.table P, DIV.informaltable P {
+	font-size: 10.0pt;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	margin-top: 5pt;
+	margin-bottom: 5pt;
+}
+DIV.table TABLE, DIV.informaltable TABLE {
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	border-collapse: collapse;
+}
+TABLE.simplelist {
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	font-size: 10pt;
+}
+
+CODE {
+	color: black;
+	font-family: Inconsolata, monospace, Verdana, "DejaVu Sans", sans-serif;
+	font-style: normal;
+	font-size: 11pt;
+}
+EM.replaceable {
+	color: black;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	font-size: 11pt;
+	font-style: italic;
+}
+
+DIV.toc DD {
+	font-size: 10.0pt;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	margin-top: 1pt;
+	margin-bottom: 1pt;
+	margin-left: 16pt;
+}
+DIV.toc DT {
+	font-size: 10.0pt;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	margin-top: 1pt;
+	margin-bottom: 1pt;
+}
+DIV.list-of-figures DD {
+	font-size: 10.0pt;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	margin-top: 1pt;
+	margin-bottom: 1pt;
+}
+DIV.list-of-figures DT {
+	font-size: 10.0pt;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	margin-top: 1pt;
+	margin-bottom: 1pt;
+}
+DIV.navheader TH{
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	font-size: 10.0pt;
+	font-variant: normal;
+	font-weight: bold;
+	color: #416119;
+}
+DIV.navheader TD{
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	font-size: 11.0pt;
+	font-variant: normal;
+	font-weight: bold;
+}
+DIV.navfooter TD{
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	font-size: 10.0pt;
+	font-variant: normal;
+	font-weight: bold;
+}
+
+DIV.revhistory TD{
+	font-size: 10.0pt;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border: 1px solid ;
+}
+
+DIV.revhistory P {
+	font-size: 9.0pt;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	margin-top: 1pt;
+	margin-bottom: 1pt;
+}
+
+DIV.revhistory TH{
+	background-color: #eee; 
+	font-size: 9.0pt;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	text-align: left;
+}
+
+DIV.copyright, .pubdate
+{
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	font-size: 9.0pt;
+	text-align: left;
+	padding: 0;
+	border: 0;
+}
+
+DIV.legalnotice
+{
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	font-size: 9.0pt;
+	color: #000000;
+	background-color: #ddd;
+	padding: 5px 5px 5px 5px;
+	border: 1px solid #000000;
+}
+ol {
+	font-size: 9.0pt;
+	font-family: Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+	font-variant: normal;
+}
+
+/* admonition headings */
+DIV.note, div.important, div.warning, div.caution, div.tip
+{
+	padding: 0px 0px 0px 0px;
+}
+DIV.tip, div.tip
+{
+	border-top: 1px solid #416119;
+        border-bottom: 1px solid #416119;
+/*	border-left: 1px solid #416119;
+        border-right: 1px solid #416119;*/
+}
+
+
+DIV.note, div.note, DIV.caution, div.caution, DIV.warning, div.warning, DIV.important, div.important
+{
+	border-top: 1px solid black;
+        border-bottom: 1px solid black;
+/*	border-left: 1px solid #cfcfcf;
+        border-right: 1px solid #cfcfcf;*/
+}
+
+
+DIV.note th, div.note th, DIV.caution th, div.caution th, DIV.warning th, div.warning th, DIV.important th, div.important th, DIV.tip th, div.tip th
+{
+	/* set font size and line height                             */
+	/* list of fonts provides fallbacks if a font is not present */
+	font: 15px Ubuntu, Verdana, "DejaVu Sans", sans-serif;
+
+	font-weight: bold;
+	font-style: italic;
+
+
+	/* left align */
+	text-align: left;
+}
+
+.note p, .important p, .warning p, .caution p, .tip p
+{
+}
+
+.note img, .important img, .warning img, .caution img, .tip img
+{
+	margin: 3px 3px 0px 0px;
+}
+
+

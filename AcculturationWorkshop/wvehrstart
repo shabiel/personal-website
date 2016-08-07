@@ -1,0 +1,10 @@
+#!/bin/bash
+cd `dirname $0`
+rm -f tmp/*.mj[oe]
+source ./env
+$gtm_dist/mupip journal -recover -backward g/mumps.mjl \
+&& $gtm_dist/mupip set -journal="enable,on,before" -file g/mumps.dat \
+&& ./run RESTART^ZTMB <<EOF
+y
+EOF
+find g -iname mumps.mjl_\* -mtime +3 -exec rm -v {} \;
