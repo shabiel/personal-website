@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+              <section data-markdown data-separator="---\n" data-separator-vertical="--\n">
+              <script type="text/template" >
+
+# How objective are drug-drug interactions?
+A Review of the literature regarding classifyig drug interactions and mandatory alerting in EMRs
+
+Sam Habiel, Pharm.D.
+
+sam.habiel@gmail.com
+
+@givethgoodmumps
+
+---
+
+## Objectives
+
+ * Identify at least one public drug drug interaction source; and discuss why there is a public health need for one.
+ * Discuss the problem with classifying severeties on drug-drug interactions.
+ * Identify ways to reduce alert fatigue due to drug-related alerts.
+---
+## Hollywood view of drug interactions
+
+<https://www.youtube.com/watch?v=viK121c8iZI>
+---
+## About me
+
+ * Graduated in 2004 with Pharm.D.
+ * Far more interested in computers than drugs.
+---
+## Do you know this interaction?
+
+ * Ribavarin / Zidovudine
+
+Rated as critical in the program that we were using.
+
+Resulted in an intervention.
+
+Rated as significant in the VA-NDF.
+---
+## How about?
+ * HCTZ/Atenolol
+ * ASA/Warfarin
+ * Simvastatin/Fluconazole
+ * ASA/MTX
+ * BBs/SUs
+ * Gemfibrozil/Simvastatin
+ * MAOIs/Methylphenidate
+---
+## A borrowed slide
+![Risperidone ixn](./risperidone.png)
+---
+## Black box warning contraindicated comedications
+Ann Pharmacother. 2010 Jan. doi: 10.1345/aph.1M475. PMID: 20040698.
+
+ * To determine the level of agreement in presence, clinical severity scores level of documentation ratings, and alert content among 3 leading drug interaction screening programs with regard to contraindicated comedications that are mentioned in black box warnings.
+
+--
+
+ * We identified 11 drugs with black box warnings that contained information on 59 unique contraindicated drug combinations, only 68% of which were covered by any source. Lexi-Comp detected the most interactions (n = 29) and DRUG-REAX the least (n = 18). Only 3 drug combinations were detected and rated as contraindicated or potentially life-threatening in all 3 databases. The severity scores and level of documentation ratings varied widely.
+---
+
+
+               </script>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    { src: 'plugin/zoom-js/zoom.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
