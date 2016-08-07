@@ -1,0 +1,747 @@
+<!doctype html>
+<html class="no-js" lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>History of RPMS</title>
+        <link rel="stylesheet" href="../css/foundation.min.css" />
+        <link rel="stylesheet" href="../css/app.css" />
+    </head>
+    <body>
+        <div class="large-12 columns">
+            <h1>History of RPMS</h1>
+            <div class="panel">
+                <h5>Prepared by<br />
+                    Sam Habiel, Pharm.D.<br />
+                    Director of Technology<br />
+                    VISTA Expertise Network<br />
+                    Seattle, WA</h5>
+            </div>
+            <blockquote>
+            <a rel="license" href="http://creativecommons.org/licenses/by/3.0/us/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/3.0/us/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/3.0/us/">Creative Commons Attribution 3.0 United States License</a>.
+            </blockquote>
+            <h2>About this article</h2>
+            <p>Resource Patient Management System (RPMS) is the Electronic Health Record used
+            in Indian Health Service (IHS). A full bibliography can be found at the end
+            of the article.</p>
+            <h2>Background</h2>
+            <blockquote>
+                <p>Sources: Dr. Curtis in book and the IHS website</p>
+            </blockquote>
+            <p>IHS is part of the US Department of the Health and Human Services (HHS), like
+            the National Institutes for Health and the Centers for Disease Control (CDC). It
+            exists to provide health care for Native Americans.</p>
+            <p>From the IHS website <a href="http://www.ihs.gov/aboutihs/">http://www.ihs.gov/aboutihs/</a>:</p>
+            <blockquote>
+                <p>The provision of health services to members of federally-recognized tribes
+                grew out of the special government-to-government relationship between the
+                federal government and Indian tribes. This relationship, established in 1787,
+                is based on Article I, Section 8 of the Constitution, and has been given form
+                and substance by numerous treaties, laws, Supreme Court decisions, and
+                Executive Orders. The IHS is the principal federal health care provider and
+                health advocate for Indian people, and its goal is to raise their health status
+                to the highest possible level. The IHS provides a comprehensive health service
+                delivery system for approximately 2.1 million American Indians and Alaska
+                Natives out of the total 3.4 million who belong to 566 federally recognized
+                tribes in 35 states. </p>
+            </blockquote>
+            <p>Currently the federal IHS sites consist of 28 hospitals, 61 health centers, and
+            33 health stations. In addition, 33 urban Indian health projects provide a
+            variety of health and referral services. Through P.L. 93-638 Self-Determination
+            contracts, American Indian Tribes and Alaska Native corporations administer 16
+            hospitals, 235 health centers, 75 health stations, and 164 Alaska village
+            clinics.</p>
+            <p>IHS's budget is around $4 billion.</p>
+            <p>RPMS is used in all IHS sites and many tribal sites.</p>
+            <h1>A history of RPMS precursors.</h1>
+            <h2>RADEN</h2>
+            <blockquote>
+                <p>Sources: Bill Mason, Jim Garvie, Clayton Curtis</p>
+            </blockquote>
+            <p>The very first computer system used in IHS was the Remote Access Data Entry
+            Network (RADEN) deployed in 1974 [CC]. Its sole purpose was to administer the
+            IHS Contract Health Program [BM] (for more, see
+            <a href="http://www.ihs.gov/newsroom/factsheets/contracthealthservices/">http://www.ihs.gov/newsroom/factsheets/contracthealthservices/</a>). RADEN
+            was used to capture information for contracting and billing with outside
+            providers delivering services to IHS patients and to print authorizations for
+            those outside providers to render their services.</p>
+            <p>RADEN was written in assembly language and ran on NCR mini-computers at the
+            area offices. Data entered into RADEN was transmitted to the NPRS (National
+            Patient Reporting System) in Albuquerque, NM.</p>
+            <p>In later phases, RADEN was also used to enter Ambulatory Primary Care (APC) 
+            data into the system for transmission to NPRS. APC forms were essentially
+            bubble sheets filled by the providers and sent to area offices for keying into
+            RADEN.</p>
+            <p>The main historical significance of RADEN as it relates to RPMS is that it
+            brought computers into the IHS area offices. It was not a mainly clinical 
+            system.</p>
+            <p>Today, RADEN's function is performed using the RPMS CHS and RCIS packages.</p>
+            <h2>Planning for PCIS</h2>
+            <blockquote>
+                <p>Sources: Greg Shorr</p>
+            </blockquote>
+            <p>PCIS started with Stew Rabeau. In the late 50's, he was the only physician in
+            Northern Alaska. To get to his patients, he had to fly to them. Dr. Rabeau
+            eventually became the Area Director for Alaska, and then the Head of Indian
+            Health Service. He had a vision of using emerging computing technology in
+            health. To that effect, he established the Tucson Office in 1963, and appointed
+            himself as the head of the Office of Research and Development. To staff his new
+            office, he looked for talent, and managed to recruit NASA scientists who needed
+            jobs after the conclusion of the Mercury Project.</p>
+            <p>In 1967, the office leased an IBM 360 from Bell Aerospace. Their program focused
+            on Disease Modeling as its main objective. After a talk from Larry Weed
+            regarding an approach to medical documentation (since then known as the problem
+            oriented medical record), the first system was designed around Encounter Purpose
+            of Visits and Chronic Problems. Go-live for the system was in 1969. Ted Garret
+            was the original programmer, and the system was written in COBOL and Fortran.</p>
+            <h2>HIS and PCIS</h2>
+            <blockquote>
+                <p>Sources: Bill Mason, Clayton Curtis, Ted Garrett's paper, Greg Shorr</p>
+            </blockquote>
+            <p>Development of its first true clinical precursor (Health Information
+            System—HIS) was started in 1967 by Dr. Ted Garrett at Bell Aerosystems as part
+            of a project of the IHS Office of Research and Development located in Tucson,
+            Arizona. HIS was renamed to Patient Care Information System (PCIS) when it was
+            moved to IHS servers in Albuquerque in the 1970s from Bell Aerosystems.</p>
+            <p>PCIS consisted of a COBOL program running IBM 370-145 mainframe 
+            against IBM Model 204 database and followed a problem-oriented medical record.
+            Physicians filled in triplicate encounter forms which were entered by clerks
+            into the mainframe; health summaries were printed and mailed back to the
+            clinic. Updated health summaries were sent back every two weeks to the clinics.
+            The Tucson area had on-line access to the system.</p>
+            <p>PCIS consisted of the following components (printed on a health summary):</p>
+            <ul>
+                <li>Demographics</li>
+                <li>Problem List</li>
+                <li>Lab Results</li>
+                <li>Dental</li>
+                <li>Behavioral Health</li>
+                <li>Community Health Representatives/Village Aides</li>
+                <li>Measurements</li>
+                <li>Immunizations and Skin Test</li>
+                <li>Diagnoses</li>
+                <li>Medications</li>
+                <li>Health Maintenance Reminders</li>
+            </ul>
+            <h3>Initial PCIS Implementation in Tucson</h3>
+            <p>HIS/PCIS was implemented first in July 1969 at 4 facilities on the Tohona O'odham
+            Reservation: Sells Hospital, San Xavier Health Center, San Rosa Health Center and
+            Pisinimo Health Center</p>
+            <p>The initial system collected outpatient data through encounter forms that were
+            delivered to Tucson by courier. The structured form contained
+            fields for vital signs, test results, purpose of visits, treatments, and a note
+            in a SOAP format. A variation of this form exists to this day. Initially,
+            Rebeau contracted with the Texas penal system for data entry; the yellow copy
+            of the triplicate was sent by mail there, the data was keyed in by prisoners,
+            and the data transferred to the mainframe owned by Bell Aerosystems over a 300-baud
+            modem over phone couplers. This arrangement, while effective, had a
+            turnaround time of about a month. It was eventually abandoned in favor of
+            training tribal women to enter data for immediate access (a feature in IHS that
+            persists to this day!). The results of the entered data was a Health Summary
+            printed on a 100-baud dot-matrix printer. Data was available as Health
+            Summaries via online teletype terminals at each of the facilities.</p>
+            <p>According to Lori Butcher, at some point punch cards were used for data entry.</p>
+            <h3>Movement of HIS to PCIS</h3>
+            <p>When IHS moved HIS from a mainframe owned by Bell Aerosystems to an IHS
+            mainframe in Albuquerque in the early 70s, it was named PCIS. PCIS is really
+            the same system as HIS. At this same time, dedicated telephone lines to
+            computer systems in Albuquerque were used.</p>
+            <p>The system as initially developed lacked the ability to generate reports; soon
+            this deficiency was addressed and real public health data was successfully
+            extracted from the system.</p>
+            <h3>PCIS Implementation in the Alaska Area and the Billings Area</h3>
+            <p>PCIS was implemented in the Alaska area and Billings area in a total of 10
+            hospitals and 10 health clinics. However, due to logistical difficulties, data
+            was submitted to the mainframe in Albuquerque in a different way.</p>
+            <p>In Alaska, the encounter forms were mailed to Tucson and then keyed into the
+            system.  In Billings, the encounter forms were mailed to the area office and
+            and entered from there.</p>
+            <p>Albuquerque produced microfiche sheets and mailed these out to the Alaska and
+            Billings areas. Actual paper health summaries were printed at the the data
+            centers and sent to the facilities. In the meantime, only the Tucson area had a
+            real-time connection to the mainframe computer in Albuquerque.</p>
+            <h3>The People Involved in HIS/PCIS</h3>
+            <p>The director of the HIS/PCIS implementation was Dr. Ted Garrett, starting at
+            1967, working at the time for Bell Aerosystems. The first pilot of the system
+            was done in 1968.</p>
+            <p>The people involved:</p>
+            <table>
+            <tr>
+                <th>Name</th><th>Role</th><th>Worked for</th>
+            </tr>
+            <tr><td>Ted Garrett</td><td>PM</td><td>Bell</td></tr>
+            <tr><td>Bill Mason </td><td>PM</td><td>IHS </td></tr>
+            <tr><td>Jim McArthur</td><td>DBA</td><td>Bell</td></tr>
+            <tr><td>John Guthrie </td><td>HS</td><td>Bell</td></tr>
+            <tr><td>Bob Dolan </td><td></td><td>IHS</td></tr>
+            <tr><td>Pete Krauss</td><td> </td><td>Bell</td></tr>
+            <tr><td>Bob Vint </td><td>  </td><td>?</td></tr>
+            </table>
+            <p>In 1969, Dr. Garrett moved to IHS and became the head of the project. Bill Mason
+            became the chief of operations at Tucson area. Jim McArthur also moved from
+            Bell to IHS.</p>
+            <h3>PCIS and an Epidemiological Success</h3>
+            <p>This is when Dr. Paul Nutting comes into the picture. (see Annals of Family
+            Medicine 1:180-181 (2003)) Dr. Nutting was a pediatrician by training, and
+            started his career in Indian Health Service. He had a strong interest in
+            population-based research, and initially addressed the causes of infant
+            mortality. According to Dr. Shorr, the infant mortality rate in the Tucson area
+            reservations was 65 per 1000, 90% of which was due to infant gastroenteritis.
+            (Dr. Shorr described his experiences to me as a physician at the time, and his
+            first experience with a mom bringing her child stone cold to him.) Dr. Nutting
+            contacted the World Health Organization for information and help. WHO described
+            a recent concoction of sugar, salt and water for rehydrating children; but
+            declined Dr. Nutting's request for information on the predictive factors of
+            death in infants.</p>
+            <p>Instead, Dr. Nutting and his team went to IHS pediatricians. He collected from
+            the Health Information System 40 factors that are measured on the infants, and
+            asked the IHS pediatricians to choose which ones were most likely to be
+            correlated with infant mortality due to gastroenteritis. In 1973-74, regression
+            analyses were conducted using those factors, and on these bases, a community
+            health education program was launched based on the risk factors identified.
+            This program utilized Village Health Workers to teach sanitation, care of
+            infants during episodes of gastroenteritis, and hydration using the WHO
+            rehydration formula.</p>
+            <p>Dr. Shorr says that there did not seem to him to be any day-to-day results; in
+            6 months, though, a priest happened to inquire why he had not been burying
+            infants lately. In fact, when the data came in, the program was judged to be a
+            great success; it proved instrumental in procuring congressional funding for
+            more Village Health Workers. These Village Health Workers are the precursors to
+            the present-day Community Health Representatives who play such an important part in
+            today's health care to American Indians.</p>
+            <h3>Significance of PCIS</h3>
+            <p>PCIS was the first system of its kind except for COSTAR which ran at
+            Massachusetts General Hospital. Its use in proactive epidemiology was the 
+            very first in Public Health anywhere in the world.</p>
+            <h3>PCIS References</h3>
+            <p>More information on PCIS can be found in Dr. Garrett's paper in the Proceedings
+            of the 3rd Annual Symposium on Computer Applications in Medical Care, pp.856-
+            858, available online at
+            <a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2231902/pdf/procascamc00013-0862.pdf">http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2231902/pdf/procascamc00013-0862.pdf</a>
+            and Dr. Curtis's article "Using DHCP Technology in Another Public Environment" in
+            Kolodner, RM "Computerizing Large Integrated Health Networks".</p>
+            <h2>PCIS and RADEN: Sequelae and Lessons for the future</h2>
+            <p>PCIS's reliance on mainframe and non-DBMS technology made PCIS too
+            expensive and inflexible for widespread implementation, as well as a constant
+            targets for cutbacks. PCIS was never deployed beyond the three areas
+            mentioned above. RADEN, the other computer system used in IHS, was
+            difficult to move from its aging platform without a massive and expensive
+            conversion effort. From this emerged three lessons for the future:</p>
+            <ul>
+                <li>Any system needs to be decentralized to the point of patient care;</li>
+                <li>Any system needs to be vendor-independent and portable across hardwares; and</li>
+                <li>There needs to be more local control over data systems.</li>
+            </ul>
+            <p>Notwithstanding the problems encountered with PCIS, it ended up having a long
+            life, only being sunsetted in the mid 90's.</p>
+            <p>These principles were enshrined in IHS's first 5-year strategic plan for
+            information systems developed in 1983.</p>
+            <h2>The initial push for RPMS</h2>
+            <blockquote>
+                <p>Sources: Dr. Curtis conversation and book, Bill Mason</p>
+            </blockquote>
+            <p>In 1983, a committee of Information System Center representatives from the 10
+            regions met and decided on modernizing PCIS under the impetus of a Health
+            Resources and Services Administration (HRSA) directive to find a cost
+            accounting system for the agency. A survey of commercial systems carried out in
+            response to the directive failed to identify any suitable system to be
+            purchased.  However, the survey made IHS aware of aware of the
+            VA's DHCP, functioning in a fairly early stage in most of the VA Hospitals,
+            including ADT, Scheduling, Pharmacy, Registration, Kernel, and Fileman v12. It
+            was looked at for close to a year.</p>
+            <p>Dr. Wilford was the chair of the Information Systems Strategic Planning group.
+            It included Bill Mason and Dave Bolec.  Almost at the same time, the ISC post
+            and the ISAC (Information Systems Advisory Council) was created.</p>
+            <p>In April 1984, Marty Ivers, director of the VA Center in San Francisco, talked
+            to the ISAC group. The decision was then made to bring DHCP into IHS and
+            leverage the VA investment. This recommendation was forwarded to IHS
+            headquarters and approved. Dr. Walt Wolford, a dentist, the head of IHS
+            Information Systems, was instrumental in this approval.</p>
+            <p>A new acronym was chosen, RPMS (Resource and Patient Management System) to
+            indicate that this was a different system. There was a great interest in
+            longitudinal records, especially due to the legacy of Health Summaries and
+            Encounter Forms in PCIS.</p>
+            <h2>RPMS Development</h2>
+            <h3>Initial RPMS Development</h3>
+            <blockquote>
+                <p>Sources: Bill Mason and Clayton Curtis (book and conversation)</p>
+            </blockquote>
+            <p>Development started informally in 1983, and officially in 1984. When RPMS was
+            being developed, Dr. Garret and Jim McArthur moved to Albuquerque from Tucson. Dr.
+            Garret was formally the head of the RPMS project. Jim was the head of
+            Development in Albuquerque; Bill Mason in Tucson, David Selby in Oklahoma.
+            Staffing in the 3 centers was not equal to the staffing at a single VA
+            development center.</p>
+            <p>According to Mr. Mason, the number of developers in the beginning of RPMS is as
+            follows:
+            * Albuquerque - 7 developers
+            * Tucson - 7 developers
+            * Oklahoma - 3 developers</p>
+            <p>The developers of the Patient Care Component, what was PCIS and now an
+            integral part of RPMS, were all based on Tucson. They are:
+            - Bill Mason
+            - Clayton Curtis
+            - Don Enos
+            - Lori Butcher.</p>
+            <p>PCC was developed between 1983 and 1985.</p>
+            <p>As a side note, Lori has become the most prolific and important developer in
+            RPMS. Today she is the primary developer of 10 RPMS modules, including:
+            - PCC
+            - Behavioral Health
+            - Diabetes Management System
+            - Community Health Representative System
+            - Uniform Data System
+            - National Warehouse Data Export
+            - Clinical Reporting System (CRS)
+            - Government Performance Reporting Act (GPRA)</p>
+            <p>Patient Registration was developed in Oklahoma between 1983-1984 by Larry 
+            Dillingham. Outpatient Pharmacy was ported from VISTA by Jim McCain
+            in Tucson. Scheduling was ported from VISTA by Christine Saddler in Alaska in
+            1985.</p>
+            <p>Bill Mason still has the first signed Health Summary ever produced on RPMS,
+            (which he searched for to give me an exact date: May 27th 1986). Dr. Curtis was
+            the developer of the Health Summary.</p>
+            <h3>PCC Development, an excursion</h3>
+            <blockquote>
+                <p>Sources: Clayton Curtis, Lori Butcher, Bill Mason</p>
+            </blockquote>
+            <p>The first step of starting with RPMS was loading all the legacy data located
+            in PCIS. The data structure to hold that, the Patient Care Component (PCC), was 
+            invented by Clayton Curtis, Don Enos, and Bill Mason.</p>
+            <p>According to Dr. Curtis, it had the following goals:
+            * Support front-line providers with generic capabilities
+            * Meet longitudinal care goals common in IHS ambulatory settings
+            * Integrate patient data from multiple disciplines and sources,
+            even if they originated outside of IHS.
+            * Provide reporting capabilities for administration.
+            * Provide an index on the patient's health</p>
+            <p>The development of PCC did not come about from a management directive;
+            rather, it reflected the realities of a small rural and mobile patient
+            population.</p>
+            <p>Don Enos, Bob Dolan, Clayton Curtis, and Greg Shorr got help from Michael
+            Distaso with designing the VISIT file. George Timson (personal conversation)
+            said that he added forward and backwards relational navigation to Fileman at
+            the time accommodate the VISIT file design. The VISIT file and its associated
+            "V" files were the first expression of a relational idiom to data stored in
+            Fileman, and Fileman's relational capabilities had to be developed specifically
+            for these files.</p>
+            <p>Lori related how they came up with the name for V Files. While she was working
+            with the Fileman input templates, the Visit File for Measurements (the
+            equivalent to VISTA vitals) was named the same as the main file containing
+            Measurement types.  Both were called "Measurement". After consulting, the PCC
+            team decided to rename the Measurements and any other Visit Data file to be
+            prefixed by V. V MEASUREMENT, V PROVIDER, V POV were born. What's remarkable is
+            that once the V File structure was developed, it hasn't changed.</p>
+            <p>While not belonging to the V Files, the Problem list, a core component of PCIS,
+            was one of the first files to be developed in PCC. Its purpose is to act as a
+            communication tool among providers.</p>
+            <p>At the same time as the development of PCC, almost hand in hand, Clayton Curtis designed
+            the Health Summary to replicate what PCIS had as one of its core components.</p>
+            <h3>Name and Numberspace</h3>
+            <p>Lori says that Cameron Schlehuber, the longtime VA DBA, gave IHS the
+            numberspace 9,000,000 to 9,999,999. As they expanded, they were also given
+            90,000 to 99,999. For namespaces, they initially were like VA sites in
+            getting A for local development. Eventually, IHS got B as a whole for all
+            RPMS development.</p>
+            <h3>The unusual role of clinicians in the development of RPMS</h3>
+            <blockquote>
+                <p>Source: Bill Mason</p>
+            </blockquote>
+            <p>Most of the development staff Bill Mason oversaw in Tucson were former or
+            current Health Care providers:
+            - Greg Shorr, MD, Physician
+            - C Clayton Curtis, MD, Physician
+            - David Grau, DMS, Dentist
+            - Tom Love, a Public Health Nurse
+            - Jim McCain, RPh, a Pharmacist
+            - Diane Lopez, Medical Records Administrator, an analyst
+            - Jason Lockwood, a Lab Tech
+            - Stanley Griffith, MD, Physician, an analyst</p>
+            <p>Non-clinicians also provided key contributions:
+            - Aline Purnell, analyst
+            - Don Enos, health analytics researcher, programmer
+            - Lori Butcher, health analytics researcher, programmer</p>
+            <h3>Hardware and Software Platforms on which RPMS was deployed</h3>
+            <blockquote>
+                <p>Source: Bill Mason</p>
+            </blockquote>
+            <p>RPMS was initially installed on PDP-11 clones Plessy Peripheral systems, which were DEC clones. One area
+            used Burrows mini-computers; but most other areas decided to use what
+            Tucson had. There was no TCP/IP back then; users used dumb terminals running at
+            300-500 baud. The MUMPS implementations used were MSM, DSM or Intersystems. Each
+            area could pick which system to use. Tucson used DSM. The only area that used a
+            DEC was Alaska.</p>
+            <p>(Skipping ahead: the next computers to be used in the early 90's were IBM RISC
+            mini-computers.  Unlike the earlier incarnations of DECs, they were a Unix
+            operating system and MUMPS had to run as program on the operating system, rather
+            then being the operating system itself. Mid-90's and further, LANs and PCs came
+            to dominate.  Current RPMS MUMPS environments run on Cache on MS Windows and IBM
+            AIX.)</p>
+            <h3>Important Second-Generation PCC Applications</h3>
+            <blockquote>
+                <p>Source: Bill Mason</p>
+            </blockquote>
+            <p>A couple of important applications that were developed in the 80's bear
+            mentioning as they constitute foundational philosophies of the RPMS software as
+            a population based Medical Record. These are:
+            - Query Manager (Q-Man), developed by Dr. Greg Shorr, an interactive query tool
+            into RPMS.
+            - Visit Generator (VGEN)/Patient Generator (PGEN), a more SQL-like approach to
+            searching the RPMS database.</p>
+            <h3>Inpatient Components of RPMS</h3>
+            <blockquote>
+                <p>Source: Lori Butcher, Chris Saddler, Linda Fells</p>
+            </blockquote>
+            <p>RPMS was an Outpatient System from the outset. However, IHS has several
+            hospitals; RPMS needed some inpatient facilities. Because of Alaska Native
+            Medical Center's (ANMC) involvement at the outset, its programmers did that 
+            work. The main programmers at ANMC were Christine Saddler (an infection control
+            nurse) and Michael Schallock (a pharmacist).</p>
+            <p>Just as RPMS was getting started, ANMC developed an admission package written
+            in COBOL that ran on a WANG PS 100. It had 100 MB of disk space and 32 
+            terminals that could be hooked into it. </p>
+            <p>As mentioned in an earlier section, Ms. Saddler ported Scheduling from
+            DHCP to RPMS in 1985.</p>
+            <p>Linda Fells ported ADT from DHCP to RPMS in 1986 to 87. </p>
+            <p>Ms. Saddler ported Inpatient Pharmacy from DHCP to RPMS in the late 80's.</p>
+            <h2>IHS-VA Cooperation</h2>
+            <blockquote>
+                <p>Source: Clayton Curtis, Bill Mason</p>
+            </blockquote>
+            <p>There was a tremendous relationship with the VA. All of IHS developers worked
+            with the San Francisco and Salt Lake City Development Center and they made many
+            contributions to VA Kernel, VA Fileman, and VA Mailman. In 1986, the San
+            Francisco ISC asked IHS for a formal Interagency Agreement. This was the first
+            VA-IHS Interagency Agreement. Clayton Curtis wrote this agreement, which was
+            renewed a few times.</p>
+            <p>In 1988-9, the VA formed the Clinical Application Requirements Group, headed by
+            Dr. Kolodner. Clayton Curtis was the IHS representative.</p>
+            <p>The group helped developed spec for Fileman v 17 and network mailman.</p>
+            <p>In 1994, Dr. Curtis became the chair of the Clinical Applications Requirements
+            Group.</p>
+            <h2>Initial Deployment of RPMS</h2>
+            <blockquote>
+                <p>Source: Jim Garvie, Lori Butcher, Bill Mason</p>
+            </blockquote>
+            <p>The Tucson area sites were the first to implement PCC and registration; some
+            other sites implemented registration only; most of that happened in 1986.</p>
+            <p>Convincing a first site to implement RPMS was difficult. Due to the interest of
+            the Cherokee Hospital Leadership, as well the Nashville Area CIO, James Garvie,
+            Cherokee Hospital was the first site to implement the full production RPMS
+            outside of the testing sites in Tucson and Alaska Native Medical Center.</p>
+            <p>At the outset, Mr. Garvie worked closely with Bill Mason and demonstrated 
+            early RPMS to the Cherokee staff. Jim Mills, the Service Unit Director, made 
+            the trip to Tucson to see RPMS in action; and he scheduled his staff to see it.
+            The Clinical Director, George Graning, and his wife, Mary Ann Ferrel, were
+            practicing physicians that helped establish RPMS in Cherokee. Floyd Dennis 
+            played a critical role in supporting the implementation in Cherokee. James
+            Miller was the first Site Manager for Cherokee; indeed, he was the first
+            Site Manager at any RPMS Site.</p>
+            <p>A funny story that emerged out of the implementation is that prior to the
+            implementation team having dinner that day, a few members (including Floyd
+            Dennis and Diana Lopez) got into a car accident, which we are told was not
+            serious. They were taken to the Cherokee Hospital, where PCC implementation was 
+            set to start at midnight. Floyd and the others were offered the chance to be
+            the first patients on which PCC forms would be filled out. They declined!</p>
+            <p>To this day, the Cherokee Hospital is a center for RPMS demonstration and training.</p>
+            <p>At the outset, only outpatient functionality was implemented in RPMS in
+            Cherokee. From 1987 to 1988, Linda Fells at ANMC ported over some inpatient
+            software from VISTA to RPMS. The ADT module was ported, but rather than rely
+            on the VA-Centric Patient Treatment File (PTF), it was hooked to a new Visit
+            file call V HOSPITALIZATION. Christine Saddler, also at ANMC, ported over 
+            Inpatient Pharmacy from VISTA.</p>
+            <p>An observant reader would notice that two core packages from RPMS are missing:
+            Lab and Radiology. Lab was ported to RPMS in the late 80's by Christine
+            Saddler. Frank Stalling from the VA was instrumental in helping port over 
+            Lab. Randy Frommater (also from the VA) helped with configuring connectors
+            to Lab Machines. VISTA Radiology actually never really made it into RPMS until 
+            about 2002.</p>
+            <p>By 1988, RPMS was operational in the Tucson Area sites, in Alaska Area sites,
+            and in Nashville sites.</p>
+            <h2>The long road to nationwide deployment</h2>
+            <blockquote>
+                <p>Source: Lori Butcher, Howard Hays</p>
+            </blockquote>
+            <p>There was no push to implement RPMS quickly after the first deployments. Where
+            there was a push, it was done hand in hand with healthcare quality improvement.
+            RPMS was pitched as a system to improve the quality of patient health. One
+            of the longest-lived efforts was known as "Industrial Strength Triage". It was
+            headed by Dr. Greg Shorr (a longtime IHS physician, and an RPMS developer).
+            This is a way of doing visit planning based on protocols depending on how the
+            patient presented. This process depended on and utilized RPMS, especially the
+            Health Summary. Dr. Howard Hays (a physician) and Elizabeth Dickie (a nurse)
+            assisted Dr. Shorr with Industrial Strength Triage implementation starting in
+            the early 1990's. Dr. Shorr was instrumental in training the future leaders
+            of IHS RPMS development.</p>
+            <p>Mostly, the 1990's for RPMS was a period of consolidation and implementation. 
+            By 1993, a GAO report <a href="http://www.gao.gov/assets/80/78677.pdf">http://www.gao.gov/assets/80/78677.pdf</a> estimated that 
+            there were 229 sites operational with RPMS. However, even by 2000, there were
+            some sites who had not yet implemented PCC.</p>
+            <p>All in all, RPMS took about 15 years to be deployed to federal sites
+            and interested tribal sites.</p>
+            <h2>RPMS Software developed in the 1990's</h2>
+            <blockquote>
+                <p>Source: Lori Butcher, Howard Hays, Theresa Cullen, Christine Saddler, Linda Fells</p>
+            </blockquote>
+            <p>Flagship RPMS population health queries were developed in the late 1980's and
+            the early 1990's. The first application of its kind was Query Manager
+            (popularly know as Q-Man), written by Dr. Shorr in 1988-89. In the early 90's,
+            Lori Butcher wrote the Visit Generator and the Patient Generator (VGEN and
+            PGEN). The Diabetes Audit application was already written (also by Ms. Butcher)
+            in the late 80's. These tools were the forerunners to the GPRA Plus programs,
+            which will be presented later. In the meantime, from 1994 to 1999, the CDC was
+            very interested in using RPMS reporting capabilities to track several epidemics,
+            including epidemics for Pertussis, Hepatitis A, and
+            Shigella. RPMS enabled several police departments to track the incidence of 
+            domestic violence as that was a PCC item captured by RPMS sites.</p>
+            <p>Another prolific RPMS programmer, Michael Remillard, produced many applications.
+            These notably include Immunizations (which in the author's opinion is
+            the crown jewel of RPMS) and Women's Health.</p>
+            <p>In the mid 1990's, Dr. Shorr, in one of many forthcoming comebacks, developed
+            PCC-Plus. PCC-Plus was a program to print the encounter forms that providers
+            filled out pre- populated with RPMS data. Due to its use of Microsoft Word's mail
+            merge, it was able to use pleasing fonts rather than fixed-width fonts common
+            to unformatted text. It should be noted that the PCC-Plus forms enabled 
+            clinicians to more easily carry out Dr. Shorr's vision of "Industrial Strength
+            Triage" as they did not have to locate a health summary anymore: the actual
+            encounter form was also the health summary.</p>
+            <p>In the 1990's, Pharmacy Point of Sale was developed. Electronic billing for
+            insurances, Medicare, Medicaid was done via the new Accounts Receivable and
+            Third Party Billing packages. These packages were initially developed by
+            Michael Danielson.</p>
+            <p>The Mental Health system, MHSS, one of the first fully electronic records in
+            the country, was released in 1992.</p>
+            <p>According to F.J. Evans, he developed the very first TCP broker implementation.
+            The software utilizing that implementation, IHS Patient Chart, came in 1998.</p>
+            <p>Linda Fells wrote a Prenatal module that was never certified in RPMS.</p>
+            <h2>GPRA and GPRA Reporting</h2>
+            <blockquote>
+                <p>Source: Howard Hays and Theresa Cullen</p>
+            </blockquote>
+            <p>Government Performance and Results Act (GPRA) was a Clinton-era legislation
+            enacted in 1993. For IHS, in practice, it meant that if you are a Federal site,
+            you must prove that you are working properly. You measure yourself manually and
+            report that. There are a set of measurements that have been designated by IHS
+            for GPRA (e.g. number of tobacco screenings). These measurements were
+            done manually via random chart audits.</p>
+            <p>Upon the suggestion of a Nurse located in the Aberdeen area, who noticed that
+            most of the GPRA measures were extractable from RPMS, the Aberdeen area did the
+            development for GPRA+, which checks RPMS for the measurements rather than
+            have the checks be done manually. ITSC (the current name of the IHS division
+            that develops RPMS) took over GPRA+ in 2002. The Clinical Reporting System
+            (CRS) as it was eventually known, was released once every year. Dr. Stan
+            Griffith was instrumental in its implementation.</p>
+            <p>The existence of CRS was only possible due to the existence of Q-Man, VGEN and
+            PGEN.</p>
+            <p>CRS won the Davies award in HIMSS for RPMS in 2005. The Davies award was also
+            given for Cherokee's use of EHR, RPMS and CRS.</p>
+            <h2>The search for a fully Electronic Health Record</h2>
+            <blockquote>
+                <p>Source: Howard Hays</p>
+            </blockquote>
+            <p>Unlike VISTA, RPMS was designed to be very low-tech for its users. Providing
+            a front end to providers was not a priority in RPMS development. That started
+            changing in the beginning of the 2000's.</p>
+            <p>The Physician Specialty Group, the group that evaluated software for physicians
+            for inclusion into RPMS, hosted a demo of a Windows GUI software on top of
+            VISTA called "VistAtion" in 2000. Mike Danielson was responsible for bringing
+            it to the attention of the group; he met the creator in a VA Information
+            Technology Conference in Austin where it was demoed.</p>
+            <p>VistAtion was created by Dr. Douglas Martin, a prolific writer of VISTA
+            software (his team's creations include the CIRN Clinical Data Repository; GUI
+            Mail; an early implementation of reminder dialogs/order checking) at the
+            Indianapolis VA.  VistAtion was designed as a modular alternative to CPRS.
+            VistAtion was never deployed in the VA due to political pressures against it.</p>
+            <p>VistAtion was written in Delphi, like CPRS; however, it loaded COM 
+            (i.e. ActiveX) objects as components into a central framework. The COM objects
+            can be written in any language that supports creation of COM objects.</p>
+            <p>In 2002, in the Billings area, Mike Danielson and Robert Byron connected with
+            Dr. Douglas Martin and his company Clinical Informatics Associates (CIA) to
+            conduct a pilot of VistAtion in the Crow Hospital.</p>
+            <p>Dr. Douglas Martin, Dick Roskam, and Phillip Salmon formed CIA after they left
+            the VA. In 2002, VistAtion, now known as VueCentric, was implemented in the
+            Crow Hospital with very limited functionality, being used only by one or two
+            providers in the inpatient setting.</p>
+            <h3>Decisions decisions</h3>
+            <blockquote>
+                <p>Source: Howard Hays</p>
+            </blockquote>
+            <p>In the summer of 2002, the Area Director for the Billings area, Dewayne Genone,
+            was very impressed with VueCentric during a visit to the Crow Hospital and
+            thought that the rest of IHS should use it. As fate would have it, he got
+            reassigned to a senior position in IHS Headquarters.</p>
+            <p>Russel Pittman, head of the Albuquerque ISC, asked Dr. Hays to take a look at
+            VueCentric. It was functioning in Crow in a very rudimentary capacity and was
+            only being used by two clinicians.</p>
+            <p>In 2003, in the National Combined Councils meeting, a discussion took place on
+            what GUI front-end should clinicians use in RPMS. F.J. Evans pitched Patient
+            Chart, a currently functioning GUI software for RPMS that he created. Others
+            pitched VueCentic; but the concern was that VueCentric was at CPRS version 20
+            compared to what the VA was currently using, version 24.</p>
+            <p>In 2003, the marching orders came to explore VueCentric for adoption by IHS.
+            Some of the people involved in the early exploration included Roy Willie, Chris
+            changes that was deemed necessary in RPMS was the implementation of Pharmacy 7.</p>
+            <p>In September 2003, Dr. Charles Grimm, the IHS Director, made a public statement
+            that 20 Federal Sites will implement RPMS-EHR (the new name for the VueCentric
+            GUI) by 2005; and all of them would be on it by 2008. This statement was made
+            despite the fact that the VueCentric at the time was only running in a limited
+            capacity at the Crow Hospital. This was a hard deadline to meet.</p>
+            <h3>Programming RPMS-EHR</h3>
+            <blockquote>
+                <p>Source: Howard Hays, and personal experience</p>
+            </blockquote>
+            <p>RPMS-EHR was developed from Fall of 2003 to Summer of 2004. Dr. Hays was in
+            charge of programming for RPMS-EHR.</p>
+            <p>From Fall 2003 to 2004, development was a scramble to get everything working.</p>
+            <p>As VistAtion was a pure VISTA product, it did not communicate with PCC.
+            The PCC components and Remote Procedures for these were written by Mike 
+            Danielson in Visual Basic COM objects as a front end. These included all the
+            Visit components, Immunizations, and the Problem List, as the VA had modified
+            the Problem List package since it has received it from RPMS.</p>
+            <p>Christine Saddler ported over the Radiology package and implemented Code Set
+            Versioning.</p>
+            <p>Linda Fells performed the necessary upgrades to PIMS and ported TIU to RPMS.</p>
+            <p>Pharmacy 7 adaptation to RPMS was done by Phil Salmon.</p>
+            <p>Phil Salmon was responsible for the installation of the software at IHS sites.</p>
+            <p>Douglas Martin was in charge of the overall front end changes required
+            for VA packages to work with RPMS.</p>
+            <p>Mary Hager did a lot of the VA Health Summary work and Reminders work.</p>
+            <p>Douglas Martin and Phil Salmon developed a virgin version of RPMS for training,
+            the very first of its kind. All previous training versions of RPMS were
+            scrambled RPMS database; a clean version of an RPMS database didn't exist.</p>
+            <p>Pam Schweitzer was in charge of File Boxes of Test Scripts.</p>
+            <p>In late 2004, there were 7 test sites, including Warm Springs, Cherokee, and Fort
+            Defiance.</p>
+            <h3>Deploying RPMS-EHR</h3>
+            <blockquote>
+                <p>Source: Howard Hays, personal experience</p>
+            </blockquote>
+            <p>To implement RPMS-EHR, training and outreach was assigned to David Taylor.
+            Each area had to come up with sites. In the end, twenty sites were implemented
+            by the end of 2005, meeting the deadline set by Dr. Grimm.</p>
+            <p>A comprehensive plan and roadmap were laid out to sites for implementation.
+            Implementation was self-driven, with limited national IHS assistance.</p>
+            <p>At the time RPMS-EHR was deployed, Keith Longie was the CIO and Jim Garvie was
+            Acting Deputy Director for the Office of Information Technology (OIT).</p>
+            <p>In 2006, Medsphere acquired CIA.</p>
+            <h2>Enhancing Population Health Tools</h2>
+            <blockquote>
+                Source: Howard Hays, Greg Shorr
+            </blockquote>
+                <p>In the meantime, while RPMS-EHR was being implemented, development of better
+                population health tools was being spearheaded by Dr. Cullen, at the time the
+                CIO for IHS.</p>
+            <h3>iCare</h3>
+            <p>Work on prototype for a GUI for HIV Management was started by Dr. Horace Whitt, a dentist, based on Dr. Cullen's ideas. Following his retirement, it was contracted to DAOU. The initial results were disappointing; IHS asked for a new
+            development team. DAOU assigned Eric Perreli, Arlis Acord, and Bill Williams.
+            HMS eventually grew into the IHS population management GUI called iCare. On the
+            IHS side, the project was run by Cynthia Gebremariam, Dr. Cullen, and Linda
+            Bethea.</p>
+            <p>DAOU was acquired by Proxicom, who was acquired by Vangent, who was acquired by
+            GDIT. However, the team supporting iCare has stayed the same.</p>
+            <p>iCare 1.0 was released in the summer of 2007.</p>
+            <h2>GUIs for other people</h2>
+            <h3>Scheduling GUI</h3>
+            <blockquote>
+                <p>Source: Personal experience, Greg Shorr</p>
+            </blockquote>
+            <p>Horace Whitt's greatest contribution was creating a Scheduling GUI for RPMS
+            that was written from the ground up. This was released in 2006. Dr. Whitt also
+            created a new broker for RPMS to accommodate the needs of Microsoft .Net ADO.net
+            data structures to use in the Scheduling GUI. Dr. Shorr participated in the
+            broker project.</p>
+            <h3>Registration GUI</h3>
+            <blockquote>
+                <p>Source: Howard Hays</p>
+            </blockquote>
+            <p>More recently, a registration GUI has been written.</p>
+            <h2>Filling in the Gaps in RPMS</h2>
+            <blockquote>
+                <p>Source: Susan Pierce, Greg Shorr</p>
+            </blockquote>
+            <p>Moving from a paper-based system to an electronic system meant losing some
+            of the flexibility of paper. Some of these applications were very resistant
+            to being computerized; if they were, TIU notes were used, which unfortunately
+            do not code the data at all.</p>
+            <h3>Well-Child Module</h3>
+            <p>Dr. Greg Shorr, in another comeback, developed the Well-Child module. Because
+            the questionnaire-oriented forms had no equivalent in VISTA (outside of the new
+            VISTA Mental Health packages), they had to wait following the deployment of 
+            RPMS-EHR. The Well-Child module used the broker that Dr. Whitt wrote.</p>
+            <h3>Prenatal Module</h3>
+            <p>We mentioned that Linda Fells created the first version of the Prenatal Module
+            in the late 1990s.  Prenatal care is a notoriously hard area to computerize.
+            Dr. Shorr (again!) did the programming for the Prenatal care module. All in
+            all, the software was rejected 3 more times (in addition to the time that Linda
+            Fells worked on it) until it was deemed usable enough to be included in RPMS.</p>
+            <h3>Optometry Support</h3>
+            <p>This is another area which has no VISTA equivalent. RPMS has recently added
+            limited Optometry support to help document Optometry readings as structured
+            data.</p>
+            <h2>RPMS beyond IHS</h2>
+            <blockquote>
+                <p>Source: Jim Garvie, Jack Schaffer, Chris Uyehara</p>
+            </blockquote>
+            <p>The Community Health Clinics of West Virginia was a prospective pilot site for
+            the Vista Office Project. The parties involved didn't like the poor support of
+            VISTA for Pediatrics. They saw RPMS, and hired Medsphere to implement it.
+            However, this implementation did not last for too long. Due to the high costs
+            of supporting RPMS, and the difficulty of configuring the practice management
+            systems in RPMS in a private sector setting, the clinics eventually started
+            dropping RPMS in favor of Athena Health. In the end, the decision to leave RPMS
+            was a difficult one but was made primarily to have better billing functionality
+            in Athena Health.</p>
+            <p>Most of the Hawaii public health system uses RPMS. It is not known how they got
+            started. Hawaii clinics using RPMS, unlike the West Virginia clinics, actually
+            were already using VISTA from the Vista Office Project. Again, due to the poor
+            support of VISTA for Pediatrics, Women's Health, and in addition due to the 
+            lack of Patient Management modules in VISTA, the clinics and hospital moved to
+            RPMS.</p>
+            <p>Some clinics in American Guam run RPMS.</p>
+            <h2>What does the future hold?</h2>
+            <p>RPMS has been very strong with keeping current with Federal requirements.
+            It was the first VISTA-related EHR to be certified for Meaningful Use Stage I,
+            and it will be the first to certify for Stage II. It is continuously being
+            improved with visible changes year to year.</p>
+            <p>However, one thing that has really hurt RPMS is the lack of able and competent
+            support inside and outside of IHS, plus the cost that it takes to support it.</p>
+            <p>One of the flagship sites running RPMS, Alaska Native Medical Center, switched
+            to Cerner in the mid-2000s due to the fact that they were actually supporting
+            RPMS with heavy modifications and heavy imports from VISTA. It's not known
+            how well this is working out for them.</p>
+            <p>Tribal sites, unlike Federal Sites, do not have to run RPMS. Many of them, 
+            especially those located in California, use NextGen.</p>
+            <h2>Lessons learned about RPMS development and Support</h2>
+            <p>If I may be permitted a bit of editorializing, here are a few lessons about RPMS development:</p>
+            <ul>
+                <li>It's possible to fork VISTA and keep in sync with it as it is updated. You do need a long term commitment and good expertise to do it.</li>
+                <li>The development of RPMS costs about 1/100th of the development of VISTA.  Ironically, RPMS software is frequently of higher quality than VISTA software.</li>
+                <li>Support has always been the achilles heel of RPMS.</li>
+                <li>Most of the software developers in the RPMS world have been women.</li>
+            </ul>
+            <h2>References</h2>
+            <p>In person and phone conversations with:</p>
+            <ul>
+                <li>Dr. Howard Hays</li>
+                <li>Dr. Theresa Cullen</li>
+                <li>Dr. Greg Shorr</li>
+                <li>Dr. A. Clayton Curtis</li>
+                <li>James Garvie</li>
+                <li>Chistopher Uyehara</li>
+                <li>Jack Schaffer</li>
+                <li>Lori Butcher</li>
+                <li>Bill Mason</li>
+                <li>Christine Saddler</li>
+                <li>Linda Fells</li>
+            </ul>
+            <p>Curtis, CA. "Using DHCP Technology in Another Public Environment" in
+            Kolodner, RM Ed. 'Computerizing Large Integrated Health Networks: The VA Success'.
+            Springer, New York, 1997.</p>
+            <p>Garrat, A. 1979. An information system for ambulatory care. 'Proceedings of the
+            3rd Annual Symposium on Computer Applications in Medical Care', pp. 856-858.</p>
+            <p>GAO Report "FEDERAL HEALTH CARE: Increased Information System Sharing Could
+            Improve Service, Reduce Costs". Published June 1993. Available at
+            <a href="http://www.gao.gov/assets/80/78677.pdf">http://www.gao.gov/assets/80/78677.pdf</a></p>
+        </div>
+    </body>
+</html>
