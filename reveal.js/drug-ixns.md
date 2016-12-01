@@ -15,6 +15,11 @@ sam.habiel@gmail.com
  * Discuss the problem with classifying severeties on drug-drug interactions.
  * Identify ways to reduce alert fatigue due to drug-related alerts.
 ---
+
+## Financial Relationships Disclosure
+None currently
+
+---
 ## Hollywood view of drug interactions
 
 <https://www.youtube.com/watch?v=viK121c8iZI>
@@ -32,7 +37,8 @@ Rated as critical in the program that we were using.
 
 Resulted in phone calls.
 
-Rated as significant in the VA-NDF.
+* Rated as significant in the VA-NDF.
+* Rated as Severe (2) in FDB.
 ---
 ## How about?
  * HCTZ/Atenolol
@@ -42,8 +48,9 @@ Rated as significant in the VA-NDF.
  * BBs/SUs
  * Gemfibrozil/Simvastatin
  * MAOIs/Methylphenidate
+ * Pimozide/Ciprofloxacin
 ---
-## A borrowed slide
+## A borrowed slide from Dr. Richard Boyce
 ![Risperidone ixn](./risperidone.png)
 ---
 ## Black box warning contraindicated comedications
@@ -132,14 +139,14 @@ J Biomed Inform. 2015 Jun;55:206-17. doi: 10.1016/j.jbi.2015.04.006. PMID: 25917
 * 15 Data sources
 
 --
- * Crediblemeds.org
- * VA NDF-RT
- * ONC High Priority
- * ONC Non-interruptive
- * OSCAR
- * DDI Corpus 2011
- * DDI Corpus 2013
- * PK DDI Corpus
+* Crediblemeds.org
+* VA NDF-RT
+* ONC High Priority
+* ONC Non-interruptive
+* OSCAR
+* DDI Corpus 2011
+* DDI Corpus 2013
+* PK DDI Corpus
 
 --
 * NLM CV DDI Corpus
@@ -159,3 +166,102 @@ For us, we are most interested in the ANSM, ONC lists, and VA NDF. Overlap stati
  * VA NDF/ONC HP: 20% (study)
  * VA NDF/ONC NI: 1.3% (study)
 
+---
+
+## ONC High Priority List
+J Am Med Inform Assoc. 2012 Sep-Oct;19(5):735-43. doi: 10.1136/amiajnl-2011-000612. PMID: 22539083
+
+ * Drug-Ixn List sponsored by ONC that must be alerted by EHR vendors.
+
+--
+
+![ONC HP Table](./ONC-Table4.png)
+
+--
+
+Interesting Tidbits from this:
+
+ * Low matching percentage from Open Source DDI Compendia
+ * (we'll save this one to the end of the talk)
+ * Gemfibrozil/Statins Interaction rated as critical, then downgraded.
+ * Linezolid/Triptans rated as critical, but Vendors disagreed unanimously.
+
+---
+
+## ONC Low Priority List
+J Am Med Inform Assoc. 2013 May 1;20(3):489-93. doi: 10.1136/amiajnl-2012-001089. PMID: 23011124
+
+An attempt by ONC to address the alert fatigue issue.
+
+--
+
+## Consequences of Overalerting
+http://www.metafilter.com/148555/The-Overdose-Harm-in-a-Wired-Hospital
+
+--
+
+[Link](http://jamia.oxfordjournals.org/content/jaminfo/20/3/489.full.pdf)
+
+* Table 3 and Table 4
+
+* NSAIDs vs BB and NSAIDs vs ACEI deemed low priority.
+
+---
+
+## Alert Overload has another component though (slides from Dr. Russ)
+Applying human factors principles to alert design increases efficiency and reduces prescribing errors in a scenario-based simulation.
+
+J Am Med Inform Assoc. 2014 Oct;21(e2):e287-96. doi: 10.1136/amiajnl-2013-002045.  PubMedID: 24668841
+
+--
+
+![Russ1](./russ-slide-15.png)
+
+--
+
+ * 19 alerts missed due to scrolling mechanism
+ * 6 (30%) of prescribers
+ * 2 critical drug-drug interactions
+
+--
+
+![Russ2](./russ-slide-20.png)
+
+--
+
+![Russ3](./russ-slide-13.png)
+
+--
+
+ * This was done on an open source EMR.
+ * Can you do this kind of analysis on proprietary EMRs?
+
+---
+
+# Conclusion
+ 
+ * Could Jack Nicolson have had Nitroglycerin infused safely?
+ 
+--
+## We are lucky! We have data to tell us.
+Time-dependent interactions of the hypotensive effects of sildenafil citrate and sublingual glyceryl trinitrate.
+
+Br J Clin Pharmacol. 2009 Apr;67(4):403-12. doi: 10.1111/j.1365-2125.2009.03375.x. PMID: 19371313.
+
+--
+
+* Mean reduction is SBP at 1 hour for angina patients is -16 (95% CI: -12 to -21)
+* What's his blood pressure?
+* I think it's safe to administer in an ER setting; not in an ambulatory setting.
+ (but I don't remember anymore what is the appropriate treatment for Acute Angina).
+* An EMR will alert you for a critical interaction here.
+* ONC HP List decided to exclude PDE Inhibitors and Nitrates.
+
+--
+## My recommendations from my career:
+
+ * EMRs needs to distinguish alerting from information provision.
+ * Alerting should be done at the highest alert levels only.
+ * However, the ordering interface should be much better at providing non-
+   interruptive hints to providers at the point of ordering regarding expected drug interactions.
+ * Investigations for drug interactions for patients should not use alert systems as a guide. Instead, a separate tool is needed.
