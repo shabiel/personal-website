@@ -1,0 +1,164 @@
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title></title>
+<link rel="stylesheet" href="../../css/foundation.min.css" />
+<link rel="stylesheet" href="../../css/app.css" />
+</head>
+<body>
+<div class="large-12 columns">
+<h1 id="converting-cprs-to-talk-to-vista-using-utf-8">Converting CPRS to talk to VistA using UTF-8</h1>
+<h2 id="introduction-to-plan-vi-aka-plan-6">Introduction to Plan VI (aka Plan 6)</h2>
+<p>OSEHRA just started a project called Plan VistA Internationlization (VI)--and in order to distinguish it from VistA Imaging, we decided to call it Plan 6. The objective of the project is to allow VistA to be easily modified by international users for use in their own countries in local languages and local dates. It is not intended to be a thorough implementation in a specific language.</p>
+<p>One of the first stages of OSEHRA's Plan 6 work is for CPRS to be able to talk to VistA in UTF-8. Since Delphi XE (released in 2009), Delphi supported Unicode strings as UTF-16. This allows us for the first time to transparently support different character sets within the same sysatem, and it allowed us to represent glyph based languages (such as Chinese) for the first time in CPRS.</p>
+<p>I (Sam Habiel) was very involved in choosing a character set for VistA's implementation in Jordan, where various elements needed to be represented in Arabic. You can find my adventures linked from my <a href="http://smh101.com">home page</a>. In the end, due to the fact that Delphi 2006 only allowed us to use single bytes for each character, we ended up using Windows Code Page 1256 for all of VistA. It worked, but it required us to write some hooks in order to talk to other systems that used Unicode (e.g. Printers).</p>
+<h2 id="modifying-the-xwb-broker---try-1-and-why-were-only-partially-successful">Modifying the XWB Broker - Try 1 and why were only partially successful</h2>
+<p>We found out quickly that we needed to modify a single broker file: <a href="https://github.com/OSEHRA/VistA/blob/master/Packages/RPC%20Broker/BDK/Source/wsockc.pas">wsockc.pas</a>. It was easier said than done. Writing network communication code is hard; and trying to adapt the existing older string types turned out to be problematic. These are the main issues:</p>
+<ul>
+<li>Pascal has been continously enhanced--most bafflingly to me: it has three different string types for different circumstances--all of which were being used in the codebase: Pascal strings; regular reference counted strings; and zero terminated strings.</li>
+<li>Correct Unicode converstion methods are hard to find. There are so many of them, and some of them produce the wrong result (e.g. <a href="http://docwiki.embarcadero.com/Libraries/Tokyo/en/System.UTF8ToString">UTF8ToString()</a>) strips the initial character of the output--possibly it wants to create a Pascal string, not a reference counted string.</li>
+<li><code>wsockc.pas</code> was not refactored with the advent of Delphi XE--the algorithm was kept the same as in the previous single byte encoding versions of Delphi. However, the algorithm was incorrect at this point in time whenever any multibyte string was entered into CPRS.</li>
+</ul>
+<p>The following is the main receive loop as as result of our first try. Code containing &quot;//&quot; was previous code that was commented out.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">//  BufSend, BufRecv, BufPtr: PChar;</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">BufSend, BufRecv, BufPtr: PAnsiChar;</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">...</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">repeat</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">  BytesRead := recv(hSocket, BufPtr^, BytesLeft, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">  <span class="kw">if</span> BytesRead &gt; <span class="dv">0</span> <span class="kw">then</span> <span class="kw">begin</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">    <span class="kw">if</span> BufPtr[BytesRead<span class="dv">-1</span>] = <span class="st">#4 </span><span class="kw">then</span> <span class="kw">begin</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="co">//    sBuf := ConCat(sBuf, BufPtr);xe3</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">      sBuf := sBuf + Utf8ToUnicodeString(BufPtr);</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">    <span class="kw">end</span> <span class="kw">else</span> <span class="kw">begin</span></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">      BufPtr[BytesRead] := <span class="st">#0;</span></a>
+<a class="sourceLine" id="cb1-14" data-line-number="14"><span class="co">//    sBuf := ConCat(sBuf, BufPtr);</span></a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">      sBuf := sBuf + Utf8ToUnicodeString(BufPtr);</a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">    <span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">    Inc(BytesTotal, BytesRead);</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">  <span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb1-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">  <span class="kw">if</span> BytesRead &lt;= <span class="dv">0</span> <span class="kw">then</span> <span class="kw">begin</span></a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">    <span class="kw">if</span> BytesRead = SOCKET_ERROR <span class="kw">then</span></a>
+<a class="sourceLine" id="cb1-22" data-line-number="22">      NetError(<span class="st">&#39;recv&#39;</span>, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">    <span class="kw">else</span></a>
+<a class="sourceLine" id="cb1-24" data-line-number="24">      NetError(<span class="st">&#39;connection lost&#39;</span>, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb1-25" data-line-number="25">    <span class="kw">break</span>;</a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">  <span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb1-27" data-line-number="27"><span class="kw">until</span> BufPtr[BytesRead<span class="dv">-1</span>] = <span class="st">#4;</span></a>
+<a class="sourceLine" id="cb1-28" data-line-number="28">sBuf := Copy(sBuf, <span class="dv">1</span>, pos(<span class="st">#4,</span>sBuf)-<span class="dv">1</span>);</a></code></pre></div>
+<p>This code worked for receiving data from VistA, but was incorrect in other respects. The biggest problem we had was that the BytesRead count did not reflect the end of the string anymore--and we didn't know anyway in which to fix this--thus the hacky copy at the end that guesses the end of the string. I also learned later that <code>pAnsiChar</code> has some hidden semantics that make them convert strings into the current code page being used in the system.</p>
+<h2 id="network-communication-the-correct-way">Network Communication, the correct way</h2>
+<p>I have previously converted a VistA TCP Communication Library to use Unicode: <a href="https://trac.opensourcevista.net/svn/BMXNET_RPMS_dotNET_UTILITIES-BMX/trunk/cs/bmx_0200scr/BMX2/BMXNet/BMXNetLib.cs">BMXNet</a>, in C#. I knew that we needed to send and receive bytes; not strings. But I didn't know how I can do that in Delphi. Plus the concept of multiple types of strings was very confusing to me.</p>
+<p>The following resources really helped me:</p>
+<ul>
+<li>An Embracadero <a href="https://www.danysoft.com/free/delphiunicodemigration.pdf">Tech Note</a> about migrating old Delphi code bases to Unicode.</li>
+<li>Rudy Velthuis' <a href="http://rvelthuis.de/articles/articles-pchars.html">blog post</a> about PChars and strings.</li>
+<li>Marco Cantu's <a href="http://www.marcocantu.com/objectpascalhandbook/">Object Pascal Handbook</a>, which is required reading if you are just getting started in Pascal like I was.</li>
+<li>This Stackoverflow question &lt;https://stackoverflow.com/questions/21574201/delphi-byte-array-to-string&gt; which told me that most of the Delphi Runtime Library (aka RTL) functions/procedures that operates on bytes use the <code>TBytes</code> type, which is a dynamic array of bytes.</li>
+</ul>
+<p>I found out from Marco Cantu's book that as of Delphi XE7, you can concatenate two TBytes arrays using a <code>+</code> sign; rather than manually setting a new array by copying memory. That was the big magical ingredient in my new algorithm.</p>
+<p>Some simple examples to illustrate my changes, before showing you again the read loop:</p>
+<p>LPack is the most important call to get right in order to be able to send Unicode data to VistA. LPack Before:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">function</span> LPack(Str: <span class="dt">String</span>; NDigits: <span class="dt">Integer</span>): <span class="dt">String</span>;</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">Var</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">  r: <span class="dt">Integer</span>;</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">  t: <span class="dt">String</span>;</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">  Width: <span class="dt">Integer</span>;</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">  Ex1: Exception;</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="kw">begin</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">  r := Length(Str);</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">  <span class="co">// check for enough space in NDigits characters</span></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">  t := IntToStr(r);</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">  Width := Length(t);</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">  <span class="kw">if</span> NDigits &lt; Width <span class="kw">then</span></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">  <span class="kw">begin</span></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">    Ex1 := Exception.Create(<span class="st">&#39;In generation of message to server, call to LPack where Length of string of &#39;</span>+IntToStr(Width)+<span class="st">&#39; chars exceeds number of chars for output length (&#39;</span>+IntToStr(NDigits)+<span class="st">&#39;)&#39;</span>);</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">    <span class="kw">Raise</span> Ex1;</a>
+<a class="sourceLine" id="cb2-16" data-line-number="16">  <span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb2-17" data-line-number="17">  t := <span class="st">&#39;000000000&#39;</span> + IntToStr(r);               <span class="co">{eg 11-1-96}</span></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18">  Result := Copy(t, length(t)-(NDigits<span class="dv">-1</span>),length(t)) + Str;</a>
+<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="kw">end</span>;</a></code></pre></div>
+<p>LPack After:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">function</span> LPack(Str: <span class="dt">String</span>; NDigits: <span class="dt">Integer</span>): TBytes;</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">var</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">  r: <span class="dt">Integer</span>;</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">  t: <span class="dt">String</span>;</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">  t2: <span class="dt">String</span>;</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">  Width: <span class="dt">Integer</span>;</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">  Ex1: Exception;</a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="kw">begin</span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9">  r := TEncoding.UTF8.GetByteCount(Str);</a>
+<a class="sourceLine" id="cb3-10" data-line-number="10">  <span class="co">// check for enough space in NDigits characters</span></a>
+<a class="sourceLine" id="cb3-11" data-line-number="11">  t := IntToStr(r);</a>
+<a class="sourceLine" id="cb3-12" data-line-number="12">  Width := Length(t);</a>
+<a class="sourceLine" id="cb3-13" data-line-number="13">  <span class="kw">if</span> NDigits &lt; Width <span class="kw">then</span></a>
+<a class="sourceLine" id="cb3-14" data-line-number="14">  <span class="kw">begin</span></a>
+<a class="sourceLine" id="cb3-15" data-line-number="15">    Ex1 := Exception.Create(<span class="st">&#39;In generation of message to server, call to LPack where Length of string of &#39;</span>+IntToStr(Width)+<span class="st">&#39; chars exceeds number of chars for output length (&#39;</span>+IntToStr(NDigits)+<span class="st">&#39;)&#39;</span>);</a>
+<a class="sourceLine" id="cb3-16" data-line-number="16">    <span class="kw">Raise</span> Ex1;</a>
+<a class="sourceLine" id="cb3-17" data-line-number="17">  <span class="kw">end</span>; <span class="co">//if</span></a>
+<a class="sourceLine" id="cb3-18" data-line-number="18">  t := <span class="st">&#39;000000000&#39;</span> + IntToStr(r);               <span class="co">{eg 11-1-96}</span></a>
+<a class="sourceLine" id="cb3-19" data-line-number="19">  t2 := Copy(t, length(t)-(NDigits<span class="dv">-1</span>),length(t));</a>
+<a class="sourceLine" id="cb3-20" data-line-number="20">  Result := TEncoding.UTF8.GetBytes(t2) + TEncoding.UTF8.GetBytes(Str);</a>
+<a class="sourceLine" id="cb3-21" data-line-number="21"><span class="kw">end</span>; <span class="co">//function LPack</span></a></code></pre></div>
+<p>The main changes, which are echoed throughout, is that length is measured using <code>TEncoding.UTF8.GetByteCount()</code> and rather than strings, we send bytes, which are converted from strings using <code>TEncoding.UTF8.GetBytes()</code>, which returns a TBytes array. TBytes are concatenated together using a + sign to get the <code>Result</code> for the function.</p>
+<p>Let's now show the new receive call:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">function</span> TXWBWinsock.NetCall(hSocket: TSocket; imsg: Tbytes): PChar; <span class="co">// JLI 090805</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">var</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">  BufSink: TBytes;                                            <span class="co">// to /dev/null</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">  BufSend: TBytes;                                            <span class="co">// Send Buffer</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">  BufRecv: TBytes;                                            <span class="co">// Receive Buffer</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">  LBufSend: <span class="dt">integer</span>;                                          <span class="co">// Send Buffer Length</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">...</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">  <span class="co">{ -- loop reading TCP buffer until server is finished sending reply }</span></a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">  BytesTotal := <span class="dv">0</span>;</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">  <span class="kw">repeat</span></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12">    SetLength(BufRecv, Buffer32k + BytesTotal);</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13">    BytesRead := recv(hSocket, BufRecv[BytesTotal], Buffer32k, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb4-14" data-line-number="14">    <span class="kw">if</span> BytesRead &lt;= <span class="dv">0</span> <span class="kw">then</span></a>
+<a class="sourceLine" id="cb4-15" data-line-number="15">    <span class="kw">begin</span></a>
+<a class="sourceLine" id="cb4-16" data-line-number="16">      <span class="kw">if</span> BytesRead = SOCKET_ERROR <span class="kw">then</span></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17">        NetError(<span class="st">&#39;recv&#39;</span>, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb4-18" data-line-number="18">      <span class="kw">else</span></a>
+<a class="sourceLine" id="cb4-19" data-line-number="19">        NetError(<span class="st">&#39;connection lost&#39;</span>, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb4-20" data-line-number="20">      <span class="kw">break</span>;</a>
+<a class="sourceLine" id="cb4-21" data-line-number="21">    <span class="kw">end</span>; <span class="co">//if BytesRead &lt;= 0</span></a>
+<a class="sourceLine" id="cb4-22" data-line-number="22">    Inc(BytesTotal, BytesRead);</a>
+<a class="sourceLine" id="cb4-23" data-line-number="23">  <span class="kw">until</span> BufRecv[BytesTotal<span class="dv">-1</span>] = <span class="bn">$4;</span> <span class="co">//repeat</span></a>
+<a class="sourceLine" id="cb4-24" data-line-number="24">  SetLength(BufRecv, BytesTotal);</a>
+<a class="sourceLine" id="cb4-25" data-line-number="25">  BufRecv[BytesTotal<span class="dv">-1</span>] := <span class="bn">$0;</span></a>
+<a class="sourceLine" id="cb4-26" data-line-number="26"></a>
+<a class="sourceLine" id="cb4-27" data-line-number="27">  Result := StrAlloc(BytesTotal);</a>
+<a class="sourceLine" id="cb4-28" data-line-number="28">  StrCopy(Result, PChar(TEncoding.UTF8.GetString(BufRecv)));</a></code></pre></div>
+<p>Using TBytes allowed me several advantages:</p>
+<ul>
+<li>This is a reference counted array type. I don't need to free it--and I could get rid of all the try/finally constructs whose only purpose was to clear temporary buffers.</li>
+<li>I can read data effectively in the same buffer in the loop. Most of the time, I will only need to perform a single read from the socket.</li>
+<li>There was a previous limitation of 32k for the size of the reply in VistA. This is now removed.</li>
+<li>There is no discrepancy anymore between the number of bytes read and the location of the end of the string, as we are still dealing with bytes until the very end.</li>
+</ul>
+<p>The main other function that was refactored was <code>BuildPar</code>. With these changes, we can now send and receive UTF-8 data to VistA.</p>
+<h2 id="what-about-the-broker-in-vista">What about the Broker in VistA?</h2>
+<p>The XWB Broker in VistA needed a couple of changes:</p>
+<ul>
+<li>XWBRW needs to use $ZL and $ZE instead of $L and $E, in order to talk in bytes, not in characters.</li>
+<li>Either XWBTCPM (when using xinetd) or %ZISTCPS (native listener) needs to set the read/write character set to M. This, unfortunately, is only available as of GT.M v6.3-001A.</li>
+</ul>
+<p>I took the opportunity to refactor XWBRW while I am at it to make it simpler and increase the buffer sizes--which were still at 255 characters. I also commented it very well in order to make sure that I can maintain it in the future. You can find the new version <a href="https://github.com/OSEHRA-Sandbox/VistA-M/blob/plan-vi/Packages/RPC%20Broker/Routines/XWBRW.m">here</a>.</p>
+<h2 id="what-about-caché">What about Caché?</h2>
+<p>If you were paying attention in the previous paragraph, you will notice that my changes to XWBRW will only work on GT.M/YDB.</p>
+<p>Caché is problematic in its Unicode support. It uses a mix of UTF-8/ASCII for the lower 128 bytes of ASCII and what seems to be UCS-2 for code points above 127; and it has no equivalents to $ZL/$ZE to count bytes. I asked Intersystems Support; and it looks like a Japanese support person recommended that I should best use <code>$ZCONVERT(string,&quot;O&quot;,&quot;UTF8&quot;)</code> and then use $L and $E with that.</p>
+<p>Right now XWBRW is a first draft; all calls to $ZL or $ZE will need to be made in %ZOSV which will implement it correctly for the M Virtual Machine being run.</p>
+<h2 id="other-changes">Other changes</h2>
+<p>There are two other minor changes that need to be mentioned:</p>
+<ul>
+<li>The Introductory Text box in CPRS couldn't display Unicode character correctly. It's a custom component; Kevin Toppenberg helped me switch it out with the stock TRichEdit and it now displays the characters correctly.</li>
+<li>There is a bug in Windows (I think) where calling <code>ConvertSidToStringSidA</code> in a Korean locale gives you garbage. This is easily fixed by calling <code>ConvertSidToStringSidW</code>, which gives you the correct UTF-16 string for the Security Identifier.</li>
+</ul>
+<p>That's it for this monograph.</p>
+</div>
+</body>
+</html>

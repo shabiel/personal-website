@@ -1,0 +1,49 @@
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title></title>
+<link rel="stylesheet" href="../../css/foundation.min.css" />
+<link rel="stylesheet" href="../../css/app.css" />
+</head>
+<body>
+<div class="large-12 columns">
+<h1 id="reports-and-tiu-unicode-support">Reports and TIU unicode support</h1>
+<p>After the conversion of CPRS to talk to VistA in Unicode, we needed to find all the places in CPRS that for some reason or another do not take or display Unicode text. By and large, these places have actually been easy to find (which is a good thing!). One obvious place that had issues was the Notes tab. We couldn't paste any non ASCII text; and if we typed it in (not pasted it), it wouldn't save. Another place was that in various reports (which are mostly accessed by double-clicking), all we saw was ???? for Unicode characters.</p>
+<h2 id="in-reports">??? In Reports</h2>
+<p>This was hard to find, but easy to fix. It turns out that the problem was in <code>QuickCopy</code> in <code>Packages/Order Entry Results Reporting/CPRS/CPRS-Lib/ORFn.pas</code>. This has specifically to do with the MemorySteam writes and reads. In Delphi versions that support Unicode, if you do not supply the encoding when reading and writing, the encoding defaults to ANSI. That was easy to fix.</p>
+<p>Before</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb1-1" data-line-number="1">str[<span class="dv">0</span>].SaveToStream(ms);</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">ms.Seek(<span class="dv">0</span>, soFromBeginning);</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">str[<span class="dv">1</span>].LoadFromStream(ms);</a></code></pre></div>
+<p>After</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb2-1" data-line-number="1">str[<span class="dv">0</span>].SaveToStream(ms, TEncoding.Unicode);</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">ms.Seek(<span class="dv">0</span>, soFromBeginning);</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">str[<span class="dv">1</span>].LoadFromStream(ms, TEncoding.Unicode);</a></code></pre></div>
+<p>That was it! The full commit is here: cc6d1c9fb8339c1179005d7b38cc29d9c224a215.</p>
+<h2 id="tiu-notes-pasting-and-saving">TIU Notes: Pasting and Saving</h2>
+<p>It was frustrating when trying to paste into notes: error messages; and saved data would get corrupted. The fixes were needed in two places:</p>
+<ul>
+<li>Method <code>ScrubTheClipboard</code> in <code>Packages/Order Entry Results Reporting/CPRS/CPRS-Chart/ORExtensions.pas</code> existed for the sole purpose of cleaning copied and pasted text. It did stuff like replace smart quotes with regular quotes and then replace extended ASCII with question marks. I don't know exactly what happened to it when I pasted Korean text in; but suffice it to say, it was obviously not needed now that the database is in Unicode. So that source code was completely removed. For details, see commit 1377e53f482ece06ebcfe59cd0d6a5f79984ab18.</li>
+<li>Function <code>FilteredString</code> in <code>Packages/Order Entry Results Reporting/CPRS/CPRS-Lib/ORFn.pas</code> was called when saving data. Again, it performed ASCII cleanup. It also did some cleanup of spaces. I rewrote it: it only cleans spaces up now. Commit 7294f19140ff6d017cd79822924fec6e07ae15f4.</li>
+</ul>
+<p>With that work, it is now possible to paste any Unicode text and have it saved to VistA. Some nice screenshots:</p>
+<p>A TIU Template note containing a lot of Korean:</p>
+<figure>
+<img src="images/tiu1.png" class="align-center" />
+</figure>
+<p>A full TIU note with Korean copied from Wikipedia:</p>
+<figure>
+<img src="images/tiu2.png" class="align-center" />
+</figure>
+<p>I tested templating and it worked very well. I remember from my days in Jordan that templates garbled our Windows-1256 Arabic--so I was glad to see that I didn't need to make any changes at all to get it work. I tried template objects that returned Korean text; and Template fields that returned Korean text (like Yes/No in Korean).</p>
+<h2 id="tiu-notes-rpc-orwtiu-chktxt">TIU Notes: RPC ORWTIU CHKTXT</h2>
+<p>In the first draft of the software, I actually missed this in my testing. In addition to all the Delphi Checks for empty notes, there is an RPC that is run to check to see if the note is empty. Guess what? It checked each note character to see if it was empty by its ASCII code. If it can't find a single ASCII code in the printable ASCII range, it considers the document invalid. I missed this because all my testing previously included a single printable ASCII character--especially spaces.</p>
+<p>The previous code called in EMPTYDOC+13^TIULF looked like this:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode M"><code class="sourceCode matlab"><a class="sourceLine" id="cb3-1" data-line-number="1">I $A(TIUCHAR)&#39;&lt;<span class="fl">33</span>&amp;($A(TIUCHAR)&#39;&gt;<span class="fl">123</span>)<span class="bn">!($A(TIUCHAR)=125) S TIUY=0 Q</span></a></code></pre></div>
+<p>I changed it to look like this:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode M"><code class="sourceCode matlab"><a class="sourceLine" id="cb4-1" data-line-number="1">I TIUCHAR&#39;=<span class="fl">124</span>,TIUCHAR&#39;?<span class="fl">1</span>C S TIUY=<span class="fl">0</span> Q  ; *<span class="fl">10001</span>*; Previously, individual ASCII chars where checked (&lt;<span class="fl">32</span> &amp; &gt;<span class="fl">125</span>)</a></code></pre></div>
+<p>The old code is somewhat suspect, in that it does not include 126 (<code>~</code>), which is also a printable character. And I now notice that I forgot the $ASCII on TIUCHAR. Which means that I need to go back and do another revision for this code. Maybe later this week.</p>
+</div>
+</body>
+</html>
