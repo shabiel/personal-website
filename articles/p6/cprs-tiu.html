@@ -1,16 +1,91 @@
-<html class="no-js" lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title></title>
-<link rel="stylesheet" href="../../css/foundation.min.css" />
-<link rel="stylesheet" href="../../css/app.css" />
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Reports and TIU unicode support</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css" rel="stylesheet">
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
 </head>
 <body>
-<div class="large-12 columns">
-<h1 id="reports-and-tiu-unicode-support">Reports and TIU unicode support</h1>
+<div class="grid-container">
+<header>
+<h1 class="title">Reports and TIU unicode support</h1>
+</header>
+<nav id="TOC">
+<ul>
+<li><a href="#in-reports">??? In Reports</a></li>
+<li><a href="#tiu-notes-pasting-and-saving">TIU Notes: Pasting and Saving</a></li>
+<li><a href="#tiu-notes-rpc-orwtiu-chktxt">TIU Notes: RPC ORWTIU CHKTXT</a></li>
+</ul>
+</nav>
 <p>After the conversion of CPRS to talk to VistA in Unicode, we needed to find all the places in CPRS that for some reason or another do not take or display Unicode text. By and large, these places have actually been easy to find (which is a good thing!). One obvious place that had issues was the Notes tab. We couldn't paste any non ASCII text; and if we typed it in (not pasted it), it wouldn't save. Another place was that in various reports (which are mostly accessed by double-clicking), all we saw was ???? for Unicode characters.</p>
-<h2 id="in-reports">??? In Reports</h2>
+<h1 id="in-reports">??? In Reports</h1>
 <p>This was hard to find, but easy to fix. It turns out that the problem was in <code>QuickCopy</code> in <code>Packages/Order Entry Results Reporting/CPRS/CPRS-Lib/ORFn.pas</code>. This has specifically to do with the MemorySteam writes and reads. In Delphi versions that support Unicode, if you do not supply the encoding when reading and writing, the encoding defaults to ANSI. That was easy to fix.</p>
 <p>Before</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb1-1" data-line-number="1">str[<span class="dv">0</span>].SaveToStream(ms);</a>
@@ -21,7 +96,7 @@
 <a class="sourceLine" id="cb2-2" data-line-number="2">ms.Seek(<span class="dv">0</span>, soFromBeginning);</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3">str[<span class="dv">1</span>].LoadFromStream(ms, TEncoding.Unicode);</a></code></pre></div>
 <p>That was it! The full commit is here: cc6d1c9fb8339c1179005d7b38cc29d9c224a215.</p>
-<h2 id="tiu-notes-pasting-and-saving">TIU Notes: Pasting and Saving</h2>
+<h1 id="tiu-notes-pasting-and-saving">TIU Notes: Pasting and Saving</h1>
 <p>It was frustrating when trying to paste into notes: error messages; and saved data would get corrupted. The fixes were needed in two places:</p>
 <ul>
 <li>Method <code>ScrubTheClipboard</code> in <code>Packages/Order Entry Results Reporting/CPRS/CPRS-Chart/ORExtensions.pas</code> existed for the sole purpose of cleaning copied and pasted text. It did stuff like replace smart quotes with regular quotes and then replace extended ASCII with question marks. I don't know exactly what happened to it when I pasted Korean text in; but suffice it to say, it was obviously not needed now that the database is in Unicode. So that source code was completely removed. For details, see commit 1377e53f482ece06ebcfe59cd0d6a5f79984ab18.</li>
@@ -37,7 +112,7 @@
 <img src="images/tiu2.png" class="align-center" />
 </figure>
 <p>I tested templating and it worked very well. I remember from my days in Jordan that templates garbled our Windows-1256 Arabic--so I was glad to see that I didn't need to make any changes at all to get it work. I tried template objects that returned Korean text; and Template fields that returned Korean text (like Yes/No in Korean).</p>
-<h2 id="tiu-notes-rpc-orwtiu-chktxt">TIU Notes: RPC ORWTIU CHKTXT</h2>
+<h1 id="tiu-notes-rpc-orwtiu-chktxt">TIU Notes: RPC ORWTIU CHKTXT</h1>
 <p>In the first draft of the software, I actually missed this in my testing. In addition to all the Delphi Checks for empty notes, there is an RPC that is run to check to see if the note is empty. Guess what? It checked each note character to see if it was empty by its ASCII code. If it can't find a single ASCII code in the printable ASCII range, it considers the document invalid. I missed this because all my testing previously included a single printable ASCII character--especially spaces.</p>
 <p>The previous code called in EMPTYDOC+13^TIULF looked like this:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode M"><code class="sourceCode matlab"><a class="sourceLine" id="cb3-1" data-line-number="1">I $A(TIUCHAR)&#39;&lt;<span class="fl">33</span>&amp;($A(TIUCHAR)&#39;&gt;<span class="fl">123</span>)<span class="bn">!($A(TIUCHAR)=125) S TIUY=0 Q</span></a></code></pre></div>
