@@ -9,7 +9,7 @@ years. I have been a long time listener to this show; and I can easily answer
 the two final questions! I am a pharmacist as well. I helped bring on Harlan
 Stenn to talk about NTP on show # 350
 (https://twit.tv/shows/floss-weekly/episodes/350). Harlan and I have a common
-connection you see--we are both invovled in the M/MUMPS world. M is a
+connection you see--we are both involved in the M/MUMPS world. M is a
 programming language that is widely used in Medicine; and has been less widely
 used in Banking. Harlan used to maintain an M implementation; and was on the
 Mumps Development Committee (MDC). My boss at the time knew Harlan and I was
@@ -26,7 +26,7 @@ VistA/RPMS is a big suite of mostly Electronic Medical Record (EMR)-related
 software. It was developed by the Department of Veterans Affairs and Indian
 Health Service in the United States. It's viewed by many as a national treasure.
 
-VistA/RPMS is govenrnemnt developed software, and thus is in the public domain.
+VistA/RPMS is government developed software, and thus is in the public domain.
 
 VistA has had a big international success, esp.  in countries where Medicine is
 practiced in English: 16 hospitals in India that we know of; and above 50
@@ -60,7 +60,7 @@ Story of VistA
 We can spend the entire podcast episode talking about the history of VistA. The
 beginning history is summarized really well in an article on the hardhats
 website (http://www.hardhats.org/history/hardhats.html). Until recently, we didn't
-have a good recent history that describes what happened after the intial push;
+have a good recent history that describes what happened after the initial push;
 Arthur Allen of Politico published an article last year to update the history:
 https://www.politico.com/agenda/story/2017/03/vista-computer-history-va-conspiracy-000367.
 
@@ -78,22 +78,22 @@ here http://smh101.com/articles/Hx_RPMS_final.html. RPMS started with the same
 infrastructure as VistA, but implemented a lot of new applications on top of them.
 There is a good reason for that: Before the 1990's the VA was an inpatient only
 system; IHS had both Inpatient and Outpatient; but it was mostly outpatient. By
-necessity, IHS coudln't use the same clinical software as the VA. In the next 20
+necessity, IHS couldn't use the same clinical software as the VA. In the next 20
 years, a lot of IHS code went back into the VA; and a lot of VA code was used
 by IHS.
 
 Story of CHCS
 -------------
-We should give them a passing mention. CHCS is the DOD's Inpatient System and
-also the system used in the Battlefield. It's built on VistA but is
-proprietary. There is a long story of how superior VistA was to the competition
-when the DOD bid for the system; but I won't relate that here.
+We should give them a passing mention. CHCS is the Department of Defence's
+Inpatient System and also the system used in the Battlefield. It's built on
+VistA but is proprietary. There is a long story of how superior VistA was to
+the competition when the DOD bid for the system; but I won't relate that here.
 
 What does VistA/RPMS consist of?
 --------------------------------
-VistA consists of around 150 submodules, some indepedent, but most tightly
+VistA consists of around 150 sub-modules, some independent, but most tightly
 integrated with each other. As recently as 2016, it has been rated as the most
-usable Electronic Medical Record by a Medscape survery (https://www.medscape.com/features/slideshow/public/ehr2016). Most people outside of the VA are interested in about 10-20 modules, including
+usable Electronic Medical Record by a Medscape survey (https://www.medscape.com/features/slideshow/public/ehr2016). Most people outside of the VA are interested in about 10-20 modules, including
 
 * Order Entry
 * The big 3 ancillaries: Lab, Pharmacy, and Radiology.
@@ -115,11 +115,11 @@ The story of VistA is intimately tied to the story of the M programming
 language.  The M programming language was standardized by ISO; and provided a
 solid foundation for storing medical data. Medical data is very sparse (i.e.
 most data points have very little data); and existing technology in the late
-70's had difficulty storing the data in that manner. The other big advantange M
+70's had difficulty storing the data in that manner. The other big advantage M
 had was that it was a vendor neutral language: You can develop your system and
 use any vendor for the M implementation that you wanted and switch between them
 anytime you needed. M turned out to be stable enough in the long term; which
-helped big governement customers who couldn't upgrade their code every year.
+helped big government customers who couldn't upgrade their code every year.
 The choice of M for VistA was a very deliberate one and it turned out to be an
 amazingly successful choice.
 
@@ -128,8 +128,8 @@ reason lost in history, Delphi was chosen in the VA to write the Windows
 Clients in the mid 90's.  In IHS, Visual Basic was chosen. I view the choice of
 Delphi as a very fortunate accident. It was easy to write applications in; it
 does not have an major security issues; and it has a vendor that continuously
-supports it. People who wrote thier code in Visual Basic 6 saw their language
-deprecated; and the attempts to write a Java Windows clients in a govenrnment
+supports it. People who wrote their code in Visual Basic 6 saw their language
+deprecated; and the attempts to write a Java Windows clients in a government
 environment where updates could not be made frequently proved to be a problem.
 Delphi, unfortunately, is not open source, and until a few months ago, it was
 expensive to get a license. Now Embarcadero offers free licenses for a community
@@ -162,7 +162,7 @@ wholesale into VistA/RPMS.
 
 Aside from this, people eventually figured out that it was easier to teach a
 medical person to code rather than a computer science major to understand
-medcine; and a lot of Citizen Developers made the transition. RPMS, for
+medicine; and a lot of Citizen Developers made the transition. RPMS, for
 example, was almost entirely written by people with medical backgrounds; and,
 for a change of pace, a lot of code was written by women. Lori Butcher has been
 very prolific, for example. She was not technically in Medicine, as she was a
@@ -196,7 +196,7 @@ X files, a TV show from the 90's. From the X Files wikia:
   "X" or "Mr. X" because Mulder would seek his assistance by marking an "X" in
   masking tape on his apartment window.
 
-The second thread is the Object Oriented Extenstion Committee in the Mumps
+The second thread is the Object Oriented Extension Committee in the Mumps
 Development Committee (MDC). Many members of that committee were VA employees
 involved in the maintenance of VistA. The VA was making noise at that time about
 getting rid of VistA. The MDC members were galvanized by Rick Marshall, who
@@ -209,14 +209,14 @@ original one: many in person meetings and hackathons happened, and the code to
 run VistA on GT.M was written during these hackathons. That group eventually
 became WorldVistA.
 
-The third thread is the launch of the openhealth discussion forum, which
+The third thread is the launch of the OpenHealth discussion forum, which
 brought together early pioneers to share experiences, code and co-creating a
 value proposition for open source in health. Vista aficionados begin to
-congregate on forum. The Openhealth list discussions catalyze the formation of
+congregate on forum. The OpenHealth list discussions catalyze the formation of
 the Open Source Health Care Alliance (OSHCA). Following OSHCA's inaugural
 meeting in Rome in 2000, Colin Smith of NHS England offers to host second
 annual OSHCA community meeting in London, Sept. 2001. Rick Marshall and Chris
-Richardson of Hardhats attend along with K.S.  Bhaskar announcing porting of
+Richardson of Hardhats attend along with K.S. Bhaskar announcing porting of
 VistA to then Sanchez’s GT.M. The meeting catalyzes subsequent formation of
 WorldVistA by Rick, Chris, Maury, Bhaskar, Joseph, David, Larry and Brian (I
 may have left one founder out). In 2002, WorldVistA incorporated as 501 (c) (3)
@@ -224,11 +224,11 @@ and decision is made to leverage the Hardhats community rather than create a
 separate one focused on open source. VistA community meetings are launched and
 held twice a year.
 
-The fourth thread is the start of VistA Office Project, sponsored by the US
+The fourth thread is the start of VistA Office Project (VOE), sponsored by the US
 Department of Health and Human Services. President Bush (yes, no kidding!)
 issues executive order which sets in motion the creation of the CMS led VistA
-Office EHR project in collaboration with VA and IHS... btw DoD never joined the
-party "Within 90 days, the Secretary of Veterans Affairs and the Secretary of
+Office EHR project in collaboration with VA and IHS. By the way, DoD never joined the
+party. "Within 90 days, the Secretary of Veterans Affairs and the Secretary of
 Defense shall jointly report on the approaches the Departments could take to
 work more actively with the private sector to make their health information
 systems available as an affordable option for providers in rural and medically
@@ -256,7 +256,7 @@ looking at implementing the software in 2009.
 Challenges of Open Source with VistA
 -----------------------------------
 VistA is a unique piece of software. It's difficult to implement for in real
-life, as it requires an extraordinary amount of cordination; and you can only
+life, as it requires an extraordinary amount of coordination; and you can only
 become an expert at it after using it for a few years. Here are some of the
 challenges with doing open source with VistA:
 
@@ -284,7 +284,7 @@ Open Source and VistA/RPMS Today
 --------------------------------
 By 2011, the Jordan implementation has implemented around 3 hospitals; and there
 were around 5-10 hospitals in India that implemented VistA. VistA's luck in the
-US outside of the VA was not so good, in competetion with commerical systems; it
+US outside of the VA was not so good, in competition with commercial systems; it
 found favor in Mental Health facilities, mainly due to economic reasons.
 
 By 2011, the open source community around VistA was significant--so much so that
@@ -301,7 +301,7 @@ done before, or were consolidations of previous work. These include:
  * Easy to run version of VistA and RPMS for experimentation and development.
  * Consolidation of all educational content related to VistA in a single area.
  * Certification for software going into VistA/RPMS.
- * Preching the gospel of Unit Tests as the way to create assurance in maintaining
+ * Preaching the gospel of Unit Tests as the way to create assurance in maintaining
    software.
 
 One big problem the open source community always had was the inability to
@@ -311,7 +311,7 @@ this problem for now.
 OSEHRA runs a large amount of working groups on various aspects of the software;
 and we can talk about on how to participate if you want to.
 
-OSEHRA is a realtive newcomer to the VistA Open Source Community, and there was
+OSEHRA is a relative newcomer to the VistA Open Source Community, and there was
 some friction with WorldVistA; especially as regards licensing issues.
 WorldVistA prefers copyleft licenses; whereas OSEHRA prefers non-copyleft licenses.
 The reasons for the license differences are easy to understand when you understand
@@ -346,16 +346,16 @@ project.
 
 What can we offer the FLOSS Weekly Community?
 ---------------------------------------------
-People come to us for two big reasons: They want to implement an Electonic
+People come to us for two big reasons: They want to implement an Electronic
 Medical Record  (EMR) in their hospital/clinic; or to create an educational
 curriculum for doctors and nurses for using electronic medical records.
 Implementing an EMR is actually pretty difficult: it takes a lot of 
 non-technical skill to pull off. That's a big reason why commercial EMRs did
 better than open source ones. It's such a difficult managerial topic--I don't
 know how much I want to talk about this here. Creating an educational curriculum
-is comparitively easier. The other thing we should mention is that many people
+is comparatively easier. The other thing we should mention is that many people
 use the VistA infrastructure to create their own applications, sometimes having
-nothing to do with medicine. I think this still has value today, espcially if
+nothing to do with medicine. I think this still has value today, especially if
 you want something with Java's long shelf life without it being Java. M is an
 easy language to learn and can give you a lot of power very quickly.
 
@@ -381,7 +381,7 @@ there are some items we would love to have help on:
 
 * OSEHRA has many project groups; one of the more important ones in my opinion
   is a project to create synthetic patients. Synthetic patients are important
-  because we cannot use anoymous patient data in most scenarios as it is very
+  because we cannot use anonymous patient data in most scenarios as it is very
   easily re-identified. This is a non-VistA project; it's in Java (previously
   in Ruby, but Ruby was too slow); and we would like participation for people
   to work on more modules or to look at the data and see how realistic it is.
