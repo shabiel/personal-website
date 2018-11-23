@@ -254,7 +254,7 @@ initiates the planning phase for its VistA adoption initiative. Jordan starts
 looking at implementing the software in 2009.
 
 Challenges of Open Source with VistA
------------------------------------
+------------------------------------
 VistA is a unique piece of software. It's difficult to implement for in real
 life, as it requires an extraordinary amount of coordination; and you can only
 become an expert at it after using it for a few years. Here are some of the
@@ -297,12 +297,12 @@ OSEHRA sought to establish its place in the ecosystem around VistA. I work for
 them today. OSEHRA did several innovative things that were either not completely
 done before, or were consolidations of previous work. These include:
 
- * Full version control for VistA/RPMS.
- * Easy to run version of VistA and RPMS for experimentation and development.
- * Consolidation of all educational content related to VistA in a single area.
- * Certification for software going into VistA/RPMS.
- * Preaching the gospel of Unit Tests as the way to create assurance in maintaining
-   software.
+* Full version control for VistA/RPMS.
+* Easy to run version of VistA and RPMS for experimentation and development.
+* Consolidation of all educational content related to VistA in a single area.
+* Certification for software going into VistA/RPMS.
+* Preaching the gospel of Unit Tests as the way to create assurance in maintaining
+  software.
 
 One big problem the open source community always had was the inability to
 officially collaborate with the VA on VistA software. OSEHRA has helped solve
