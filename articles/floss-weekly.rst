@@ -16,9 +16,11 @@ Mumps Development Committee (MDC). My boss at the time knew Harlan and I was
 surprised that he was responsible for NTP; and so I thought I would bring him
 on to the show.
 
-Nancy Anthracite is the president of WorldVistA, and is a currently practicing
-physician. Nancy has been more responsible than anybody else for the success of
-open source world in VistA. I will let her speak for herself.
+Nancy Anthracite is a practicing physician and President of WorldVistA. 
+WorldVistA provides the open source version of VistA called WorldVistA EHR 
+and supports the current version of VistA for Education.  WorldVistA EHR is
+the most widely used open source version of VistA in active use in clinical
+settings.
 
 What is VistA/RPMS and who needs it
 -----------------------------------
@@ -29,7 +31,7 @@ Health Service in the United States. It's viewed by many as a national treasure.
 VistA/RPMS is government developed software, and thus is in the public domain.
 
 VistA has had a big international success, esp.  in countries where Medicine is
-practiced in English: 16 hospitals in India that we know of; and above 50
+practiced in English: 16 hospitals in India that we know of; and above 30
 hospitals in Jordan, where it was implemented across all government sectors.
 
 In the United States, it is used by around 20 independent hospitals, all 23
@@ -49,8 +51,8 @@ track the health of their population closely. RPMS is mainly an Outpatient
 System.
 
 VistA is finding big success as an educational system for training nurses and
-physicians. It's currently known to be used in Johns Hopkins and University of
-Michigan, and it is certainly used in other Universities which we do not know of.
+physicians. It's currently known to be used in Johns Hopkins, University of
+Michigan, and George Masson; and it is certainly used in other Universities which we do not know of.
 
 Many of the places in which VistA and RPMS are used are not using open source
 implementations.
@@ -235,7 +237,7 @@ systems available as an affordable option for providers in rural and medically
 underserved communities." President Bush's Executive Order – April 27, 2004. In
 2005, WorldVistA is awarded the community and capacity building contract to
 establish a training program and network of vendors that can implement and
-support VOE. WorldVistA is subsequently asked to takeover development of the
+support VOE. WorldVistA was subsequently asked to takeover development of the
 VOE software as well and creates both a full open source version as well as a
 Cache based version.
 
@@ -263,11 +265,13 @@ challenges with doing open source with VistA:
 * Most people take and implement the software without giving back. Most of the
   software is public domain, so giving back is not required by a specific
   license. However, we noticed that even users in India and Jordan, when they
-  modify GPL licensed code, they do not give back their code.
+  modify GPL licensed code, they have given back a limited amount of their code.
 * VistA has no good legacy of using version control to control the source code.
   Most people developing VistA today do not use source control; and as such,
   reusing existing open source infrastructure is not easy.
-* The presence of a "mother ship" has discouraged peer to peer sharing.
+* The presence of the Veterans Affairs "mother ship" and the ability to use
+  VistA in proprietary implementations of the  software, has discouraged peer to
+  peer sharing.
 * Outside of WorldVistA and OSEHRA volunteers and members, open source culture
   does not pervade the community.
 * WorldVistA does not have a business model, and is mostly staffed by volunteers.
@@ -393,10 +397,14 @@ there are some items we would love to have help on:
   VistA in your own language, I would appreciate it as well.
 * Wine (the Linux software) needs some modifications to run CPRS. The latest
   thing it needs is an implementation of Winsock2.
-* WorldVistA is always looking for venues that are willing to host us for free.
+* WorldVistA is always looking for venues that are willing to host meetings for free.
   Usually these are universities of some kind.
 * VistA has a specific TCP wire protocol. It would be nice if somebody can write
   a Wireshark dissector for that.
+* We have a skunkworks Drug Interactions project. That's a list of drugs that
+  you are not supposed to take together. This project involves translation of a
+  document from French to English and then manually looking up items to code 
+  them in something called RxNorm and ATC.
 * Finally, it's important to note that VistA is part of a bigger ecosystem. There
   are other projects around it. If you are interested in HL7 for example (HL7 
   is a medical data interchange language), you should get involved in Mirth. If
