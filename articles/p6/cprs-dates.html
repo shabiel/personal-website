@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>CPRS Date Display</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css" rel="stylesheet">
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<div class="grid-container">
+<header>
+<h1 class="title">CPRS Date Display</h1>
+</header>
+<nav id="TOC">
+<ul>
+<li><a href="#statement-of-the-problem">Statement of the Problem</a></li>
+<li><a href="#first-a-detour">First, a Detour</a></li>
+<li><a href="#steps-for-fixing-dates">Steps for Fixing Dates</a><ul>
+<li><a href="#step-1-fixing-the-server-side">Step 1: Fixing the Server Side</a></li>
+<li><a href="#step-2-investigation-of-windows-dates">Step 2: Investigation of Windows Dates</a></li>
+<li><a href="#step-3-converting-cprs-date-formats">Step 3: Converting CPRS Date Formats</a></li>
+<li><a href="#step-4-cprs-problem-list-dates">Step 4: CPRS Problem List Dates</a></li>
+<li><a href="#step-5-cprs-vitals-dll">Step 5: CPRS Vitals DLL</a></li>
+<li><a href="#step-6-cprs-alerts">Step 6: CPRS Alerts</a></li>
+</ul></li>
+<li><a href="#result-of-the-work">Result of the Work</a></li>
+<li><a href="#remaining-bugs">Remaining Bugs</a></li>
+<li><a href="#summary-of-changes">Summary of Changes</a><ul>
+<li><a href="#m-side">M-Side</a></li>
+<li><a href="#cprs">CPRS</a></li>
+</ul></li>
+<li><a href="#summary-of-phase-1">Summary of Phase 1</a></li>
+<li><a href="#next-steps">Next Steps</a></li>
+</ul>
+</nav>
+<p><strong>Sam Habiel, Pharm.D.</strong>/ <strong>OSEHRA</strong>/ <strong>22 November 2018</strong></p>
+<p>The last development focused blog post discussed the issue of ??? in reports and why TIU notes didn't save properly. This blog post discusses the issues with CPRS Dates. Note that a I present this in an order to make it easiest to understand, not in the order I did the work. I kept going back and forth trying to come up with a way to make dates look consistent.</p>
+<h1 id="statement-of-the-problem">Statement of the Problem</h1>
+<p>CPRS are in one of two formats, and they do not change with the Windows locale. The most common format is the VistA standard format, MMM DD, YYYY: E.g. MAR 13, 2018. In CPRS, the month name is usually in Title Case: E.g. Mar 13, 2018. The other format is mm/dd/yyyy; E.g. 03/11/2011, representing March 11, 2011--not the expected 3 November 2011 commonly expected in the rest of the world.</p>
+<p>While the dates in MMM DD, YYYY with English months are unequivocal, they won't be easily readable by people who don't speak English. The mm/dd/yyyy format can and does lead to medical errors.</p>
+<p>The objective of this work therefore is to represent dates in a format that can be changed for each culture, while retaining backward compatibility with the date format that CPRS currently uses to provide continuity for current users.</p>
+<p>I spent several weeks over this issue and I came to this conclusion: There is no forethought on the format for VistA date display in CPRS, expect for two accommodations:</p>
+<ul>
+<li>Most dates match the VistA Date Display (MMM DD, YYYY)</li>
+<li>mm/dd/yy was chosen as a date format in many instances because it's short</li>
+</ul>
+<p>While date handling was consistent in each part of CPRS; there is little consistency between the parts.</p>
+<p>Some screenshots of previous CPRS Date Handling (i.e. previous to this work)</p>
+<figure>
+<img src="images/date01-problem-detail.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Dates in Problem Detail</p>
+</blockquote>
+<figure>
+<img src="images/date02-vitals-lite.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Dates in Vitals Lite</p>
+</blockquote>
+<figure>
+<img src="images/date03-reports-date-ranages.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Reports Date Ranges</p>
+</blockquote>
+<figure>
+<img src="images/date04-orders-tab.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Orders Tab</p>
+</blockquote>
+<figure>
+<img src="images/date05-notes-tab.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Notes Tab</p>
+</blockquote>
+<h1 id="first-a-detour">First, a Detour</h1>
+<p>Our previous work took us into making CPRS talk to the server in Unicode. It turns out that we missed a spot. I noticed that the Problem List tab occasionally crashed when I edited a problem. I actually was told about this problem by somebody else about 4 years ago when they ran VistA in UTF-8 mode with no other changes. I was surprised that I didn't find it till now. It turns out that CPRS and the server both had a delimiter of ASCII 255 ($C(255) in M) for passing data between themselves for edited problems. ONLY when editing problems. ASCII 255 is not a valid code point in Unicode, and crashes happen encoding and decoding strings with ASCII 255--the data was sent in a format like this: old data-255-new data.</p>
+<p>The fix was easy: replace ASCII 255 with a valid Unicode code point. A pipe (|) is not used in the context of the code (and usually is not found in any Fileman Data)--so I chose that. I could have also chosen a tilde (~). This was a tiny change in routine ORQQPL1 and pascal unit uProbs.pas.</p>
+<p>Commits:</p>
+<ul>
+<li>VistA: <a href="mailto:OSEHRA-Sandbox/VistA@7016ccbc5d1595afeb23e5bbe1c308a93ede1b9f">OSEHRA-Sandbox/VistA@7016ccbc5d1595afeb23e5bbe1c308a93ede1b9f</a></li>
+<li>VistA-M: <a href="mailto:OSEHRA-Sandbox/VistA-M@0c687b43e1e9b1badd4a89918a00836b259d78d1">OSEHRA-Sandbox/VistA-M@0c687b43e1e9b1badd4a89918a00836b259d78d1</a></li>
+</ul>
+<h1 id="steps-for-fixing-dates">Steps for Fixing Dates</h1>
+<h2 id="step-1-fixing-the-server-side">Step 1: Fixing the Server Side</h2>
+<p>Many of the dates that show up in CPRS come directly from the server, especially for reports. To isolate down the issues to those really coming from CPRS; and essentially a first step, we need to convert the date handling in VistA to be culture sensitive. I described how to do this in another paper over here (<a href="http://www.smh101.com/articles/VISTAi18nl10n.html" class="uri">http://www.smh101.com/articles/VISTAi18nl10n.html</a>). I will repeat here the overall strategy:</p>
+<p>The overall idea is to use a variable set by the Kernel upon user log-in called DUZ(&quot;LANG&quot;), to represent the user's language. This mechanism is imperfect since date displays differ even if you use the same language: E.g. American and British English; but by and large it will work for most users.</p>
+<p>To set DUZ(&quot;LANG&quot;), you typically set the field &quot;DEFAULT LANGUAGE&quot; in the &quot;KERNEL SYSTEM PARAMETERS&quot; file. You can set it also user by user.</p>
+<p>MSC Fileman (VA Fileman 22.2 has a regression in the routine DIQ) uses ^DD(&quot;DD&quot;) to do any date display. ^DD(&quot;DD&quot;) calls DILIBF, which checks the value of DUZ(&quot;LANG&quot;). If it's above 1, then it will check to see if there are any custom nodes in the language file (#.85) for date display. If it finds them it executes them.</p>
+<p>For date input, %DT handles this in a very similar way: If DUZ(&quot;LANG&quot;)&gt;1, then see if there is specific processing code for input.</p>
+<p>If you know VistA well, you will notice a glaring omission: XLFDT. XLFDT was never changed to to internationalized output of dates. Since XLFDT is just a copy of DILIBF, we just redirect the output to come from there instead.</p>
+<p>Here are a few screenshots of the steps we need to take to switch VistA to the Korean Locale:</p>
+<ol type="1">
+<li>Go to EVE &gt; Operations Management &gt; Kernel Management Menu &gt; Enter/Edit Kernel Site Parameters, and switch the language.</li>
+</ol>
+<figure>
+<img src="images/date06-ksp.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Kernel System Parameters Change to Korean</p>
+</blockquote>
+<ol start="2" type="1">
+<li>In the Language (#.85) file, for Korean, add these entries for fields DATE INPUT, DATE/TIME FORMAT, DATE/TIME FORMAT (FMTE) (NB: I asked G Timson why we have two different fields that do the output; the reason is lost in the past now.)</li>
+</ol>
+<figure>
+<img src="images/date07-fm-lang-file-nodes.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Fileman Language Nodes</p>
+</blockquote>
+<ol start="3" type="1">
+<li>The fields reference a new routine. Here are its contents. I came up with the contents after reading DILIBF, various experiments and lots of testing.</li>
+</ol>
+<figure>
+<img src="images/date08-ukoutl.png" class="align-center" />
+</figure>
+<blockquote>
+<p>UKOUTL</p>
+</blockquote>
+<ol start="4" type="1">
+<li>Fix XLFDT:</li>
+</ol>
+<figure>
+<img src="images/date09-xlfdt.png" class="align-center" />
+</figure>
+<blockquote>
+<p>XLFDT</p>
+</blockquote>
+<p>The result looks like this: very nice, I must say!</p>
+<figure>
+<img src="images/date10-result1.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Result 1</p>
+</blockquote>
+<figure>
+<img src="images/date11-result2.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Result 2</p>
+</blockquote>
+<p>This fixes a significant number of dates. But alas, much of the VistA code predates the XLFDT API. So for a select small number of routines, we made some fixes to call XLFDT if DUZ(&quot;LANG&quot;)&gt;1 (to preserve backwards compatibility with US English): DATE^TIULS, DATE^ORU, DATE^ORQ20. Problem List needed a change, which while identical, needs to be explained in more depth: EXTDT^GMPLX; Vitals has a similar issue: WRTDT^GMVLAT0 is simple; but DATE^GMVGGR2 needs to be explained. I didn't come up with this list by scanning VistA: I tested CPRS and found out what works and what doesn't.</p>
+<p>If you now run CPRS against VistA configured thus in Korean, you will see that all reports show the correct date format for Korean. Our next step is to look at date displays done by CPRS.</p>
+<h2 id="step-2-investigation-of-windows-dates">Step 2: Investigation of Windows Dates</h2>
+<p>We earlier saw that CPRS uses two formats for dates: a MMM DD, YYYY format, and a shorter MM/DD/YY format. It turns out that MS Windows has the concept of &quot;short&quot; dates and &quot;long&quot; dates--which do not correspond exactly to the two formats that CPRS uses. Windows changes what the short and long date formats are for each locale based on your machine's settings (which you can further customize if you want). Initially I thought of trying to map MMM DD, YYYY to long and MM/DD/YY to short, but there is no predictability on how dates are displayed for each locale: it's a completely human cultural concept. I wrote a small Delphi application to display dates. Here's a dictionary of the Delphi codes for dates:</p>
+<ul>
+<li>c -&gt; Short Date and Long Time (Long Time includes AM/PM)</li>
+<li>ddddd -&gt; Short Date</li>
+<li>dddddd -&gt; Long Date</li>
+</ul>
+<figure>
+<img src="images/date12-delphi-exp1.png" class="align-center" />
+</figure>
+<blockquote>
+<p>First Screen</p>
+</blockquote>
+<figure>
+<img src="images/date13-dephi-exp2.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Second Screen</p>
+</blockquote>
+<p>From this experiment, you will notice that the short dates always include the 4 digit year; and long dates can sometimes be too long. So how would we shoehorn CPRS into the two standard formats for all locales?</p>
+<p>It took me a couple of weeks to come to this realization: The problem is not really solvable in the current format, as the dates for each country that Windows supplies do not map neatly to the formats that CPRS users. In any case, we want backwards compatibility with the current way CPRS runs (i.e. it should not appear different); but there is no consistency in how dates are actually handled in CPRS. I found out that you can adjust the &quot;Short Date&quot; and &quot;Long Date&quot; format in Delphi--and I finally came up with a solution: for the US Locale, we will keep a dichotomy between short and long dates. For other locales, we will only use one date format, the one decided by Windows as the &quot;Short&quot; date format.</p>
+<h2 id="step-3-converting-cprs-date-formats">Step 3: Converting CPRS Date Formats</h2>
+<p>Chronologically I actually did part of this first to experiment with how to change dates before coming to the short date/long date decision above.</p>
+<p>CPRS has code in ORFn.pas, FormatFMDateTime that is the central hub for formatting date/times. I first rewrote it that so rather than hand-construct the string of the date, I made it use the standard Windows calls. Here's the new code:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">function</span> FMDateTimeToDateTime(ADateTime: TFMDateTime): TDateTime;</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">{ converts a Fileman date/time (type double) to a Delphi date/time }</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">var</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">  ADate, ATime: TDateTime;</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">  DatePart, TimePart: <span class="dt">string</span>;</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">begin</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">  DatePart := Piece(FloatToStrF(ADateTime, ffFixed, <span class="dv">14</span>, <span class="dv">6</span>), <span class="st">&#39;.&#39;</span>, <span class="dv">1</span>);</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">  TimePart := Piece(FloatToStrF(ADateTime, ffFixed, <span class="dv">14</span>, <span class="dv">6</span>), <span class="st">&#39;.&#39;</span>, <span class="dv">2</span>) + <span class="st">&#39;000000&#39;</span>;</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">  <span class="kw">if</span> Length(DatePart) &lt;&gt; <span class="dv">7</span> <span class="kw">then</span> <span class="kw">raise</span> EFMDateTimeError.Create(<span class="st">&#39;Invalid Fileman Date&#39;</span>);</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">  <span class="kw">if</span> Copy(TimePart, <span class="dv">1</span>, <span class="dv">2</span>) = <span class="st">&#39;24&#39;</span> <span class="kw">then</span> TimePart := <span class="st">&#39;23595959&#39;</span>;</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">  ADate := EncodeDate(StrToInt(Copy(DatePart, <span class="dv">1</span>, <span class="dv">3</span>)) + <span class="dv">1700</span>,</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">                      StrToInt(Copy(DatePart, <span class="dv">4</span>, <span class="dv">2</span>)),</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">                      StrToInt(Copy(DatePart, <span class="dv">6</span>, <span class="dv">2</span>)));</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">  ATime := EncodeTime(StrToInt(Copy(TimePart, <span class="dv">1</span>, <span class="dv">2</span>)),</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">                      StrToInt(Copy(TimePart, <span class="dv">3</span>, <span class="dv">2</span>)),</a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">                      StrToInt(Copy(TimePart, <span class="dv">5</span>, <span class="dv">2</span>)), <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">  Result := ADate + ATime;</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18"><span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb1-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb1-20" data-line-number="20"><span class="kw">function</span> FormatFMDateTime(AFormat: <span class="dt">string</span>; ADateTime: TFMDateTime): <span class="dt">string</span>;</a>
+<a class="sourceLine" id="cb1-21" data-line-number="21"><span class="co">{ formats a Fileman Date/Time using (mostly) the same format string as Delphi FormatDateTime }</span></a>
+<a class="sourceLine" id="cb1-22" data-line-number="22"><span class="kw">var</span></a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">  Julian: TDateTime;</a>
+<a class="sourceLine" id="cb1-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb1-25" data-line-number="25"><span class="kw">begin</span></a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">  Result := <span class="st">&#39;&#39;</span>;</a>
+<a class="sourceLine" id="cb1-27" data-line-number="27">  <span class="kw">if</span> <span class="kw">not</span> (ADateTime &gt; <span class="dv">0</span>) <span class="kw">then</span> <span class="kw">Exit</span>;</a>
+<a class="sourceLine" id="cb1-28" data-line-number="28">  Julian := FMDateTimeToDateTime(ADateTime);</a>
+<a class="sourceLine" id="cb1-29" data-line-number="29">  DateTimeToString(Result, AFormat, Julian);</a>
+<a class="sourceLine" id="cb1-30" data-line-number="30"><span class="kw">end</span>;</a></code></pre></div>
+<p>This code does not in and of itself decide the format of the date/time to display. Each module decides on its own format. I used the following guide to convert:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Original</th>
+<th>Converted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>mm/dd/yyyy</td>
+<td>ddddd (short format)</td>
+</tr>
+<tr class="even">
+<td>mmm dd, yyyy</td>
+<td>dddddd (long format)</td>
+</tr>
+<tr class="odd">
+<td>mm/dd/yyyy hh:nn</td>
+<td>c</td>
+</tr>
+<tr class="even">
+<td>mmm dd, [yy]yy hh:nn</td>
+<td>dddddd hh:nn</td>
+</tr>
+</tbody>
+</table>
+<p>I scanned all of the CPRS source code to calls for <code>FormatFMDateTime</code> and changed them according to the above table.</p>
+<p>In testing, I found that I missed one spot: <code>SetListFMDateTime</code>, which populates the list controls. <code>SetListFMDateTime</code> delegates its work to <code>FormatFMDateTime</code>, but I just didn't search for it to change the date formats. So that's what I did next.</p>
+<p>I was down to just the orders tab, which did not display the appropriate dates. It turns out it uses a different call: <code>FormatFMDateTimeStr</code>. I fixed that one too.</p>
+<p>While I was doing the above changes, depending on the context, anything that goes to the server is formatted as yyyy/mm/dd[@hh:nn], because Fileman can always understand that regardless of what locale %DT is running under. An important instance of this was <code>TORDateBox.Validate</code> in <code>ORDtTm.pas</code>, which validates any dates that are picked by the user from the calendar box <code>TORDateBox</code>.</p>
+<p>TORDateBox had one major other problem: To display the calendar box, the dates were set into it as a string, rather than as a formal Delphi Date object; even though it supported the latter. To get back the selected date, the text was parsed by Windows to give back a date. That dance will only work in US locales; I changed callers to TORDateBox to set Delphi Dates when initializing the date box and retrieve Delphi dates when obtaining the final user input.</p>
+<p>In the previous section, I said that I needed to keep the US dates the same but unify date formats to short dates for other locales. This was done at CPRS start-up in the FormCreate event of fFrame.pas. Here's the code that gets the Windows language. This outputs <code>ENU</code> for the Windows running on US English. <code>GetLocaleInfo</code> is a Windows C API.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">function</span> TfrmFrame.GetWindowsLanguage(LCTYPE: LCTYPE <span class="co">{type of information}</span>): <span class="dt">string</span>;</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">var</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">  Buffer : PChar;</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">  Size : <span class="dt">integer</span>;</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">begin</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">  Size := GetLocaleInfo (LOCALE_USER_DEFAULT, LCType, <span class="kw">nil</span>, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">  GetMem(Buffer, Size);</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">  <span class="kw">try</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">    GetLocaleInfo (LOCALE_USER_DEFAULT, LCTYPE, Buffer, Size);</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">    Result := <span class="dt">string</span>(Buffer);</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">  <span class="kw">finally</span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">    FreeMem(Buffer);</a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">  <span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="kw">end</span>;</a></code></pre></div>
+<p>This is the new code to reprogram short/long date formats based on locales:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co">// OSE/SMH - This block is for date internationalization</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">// For US users, apply backwards compatiblity with VistA Format</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">// All others will get the default internationlized long date format decided</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">// --&gt; by Windows.</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">fLocale := GetSystemDefaultLCID;</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">sUserLang := <span class="kw">self</span>.GetWindowsLanguage(LOCALE_SABBREVLANGNAME);</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="ot">{$IFDEF DEBUG}</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">OutputDebugString(PChar(<span class="st">&#39;Non-Unicode Locale: &#39;</span> + fLocale.ToString));</a>
+<a class="sourceLine" id="cb3-9" data-line-number="9">OutputDebugString(PChar(<span class="st">&#39;User Windows Language: &#39;</span> + sUserLang));</a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="ot">{$ENDIF}</span></a>
+<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="kw">if</span> sUserLang = <span class="st">&#39;ENU&#39;</span> <span class="kw">then</span>          <span class="co">// English United States</span></a>
+<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="kw">begin</span></a>
+<a class="sourceLine" id="cb3-13" data-line-number="13">  FormatSettings.LongDateFormat := <span class="st">&#39;mmm dd, yyyy&#39;</span>;</a>
+<a class="sourceLine" id="cb3-14" data-line-number="14"><span class="kw">end</span></a>
+<a class="sourceLine" id="cb3-15" data-line-number="15"><span class="kw">else</span> <span class="co">// Don&#39;t separate out long and short date formats for other languages</span></a>
+<a class="sourceLine" id="cb3-16" data-line-number="16"><span class="kw">begin</span></a>
+<a class="sourceLine" id="cb3-17" data-line-number="17">  FormatSettings.LongDateFormat := FormatSettings.ShortDateFormat;</a>
+<a class="sourceLine" id="cb3-18" data-line-number="18"><span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb3-19" data-line-number="19"><span class="co">// OSE/SMH - End Date i18n block</span></a></code></pre></div>
+<p>Based on some experimentation later, I find in the a couple of areas that the c format (short date + long time) is too long for display, so I change that to short date + hh:mm.</p>
+<p>More testing reveals that while I fixed all the date displays everywhere, there are 4 areas that still have problems: Labs, Graphing, Problem List, and Vitals. Labs and Graphing turn out to be easy: for some reason, they did not use the standard <code>FMDateTimeToDateTime</code> call in <code>ORFn.pas</code>. So it was a matter of simply changing all the calls from <code>FMToDateTime</code> to the former. Problems and Vitals were complicated enough--they demand their own sections.</p>
+<h2 id="step-4-cprs-problem-list-dates">Step 4: CPRS Problem List Dates</h2>
+<p>In the Problem List tab, I was met with two challenges: How to support imprecise dates, which are important in Medicine (I got diabetes 6 years ago) and validation of external dates. My rewritten <code>FormatFMDateTime</code> did not support imprecise dates, and you can put imprecise dates in the Problem List. So I fixed that; and here's the new code:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">function</span> FormatFMDateTime(AFormat: <span class="dt">string</span>; ADateTime: TFMDateTime): <span class="dt">string</span>;</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">{ OSE/SMH - Completely rewritten for Plan-vi }</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">var</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">  Julian: TDateTime;</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">  year: <span class="dt">Integer</span>;</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">  month: <span class="dt">Integer</span>;</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">  sDateTime: <span class="dt">string</span>;</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="kw">begin</span></a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">  Result := <span class="st">&#39;&#39;</span>;</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">  <span class="kw">if</span> <span class="kw">not</span> (ADateTime &gt; <span class="dv">0</span>) <span class="kw">then</span> <span class="kw">Exit</span>;</a>
+<a class="sourceLine" id="cb4-12" data-line-number="12">  <span class="kw">if</span> ImpreciseFMDateTime(ADateTime) <span class="kw">then</span></a>
+<a class="sourceLine" id="cb4-13" data-line-number="13">  <span class="kw">begin</span></a>
+<a class="sourceLine" id="cb4-14" data-line-number="14">    sDateTime := FloatToStrF(ADateTime, ffFixed, <span class="dv">14</span>, <span class="dv">6</span>);</a>
+<a class="sourceLine" id="cb4-15" data-line-number="15">    year := StrToInt(Copy(sDateTime, <span class="dv">1</span>, <span class="dv">3</span>)) + <span class="dv">1700</span>;</a>
+<a class="sourceLine" id="cb4-16" data-line-number="16">    month := StrToInt(Copy(sDateTime, <span class="dv">4</span>, <span class="dv">2</span>));</a>
+<a class="sourceLine" id="cb4-17" data-line-number="17">    <span class="kw">if</span> month &gt; <span class="dv">0</span> <span class="kw">then</span></a>
+<a class="sourceLine" id="cb4-18" data-line-number="18">      Result := year.ToString + FormatSettings.DateSeparator + month.ToString</a>
+<a class="sourceLine" id="cb4-19" data-line-number="19">    <span class="kw">else</span></a>
+<a class="sourceLine" id="cb4-20" data-line-number="20">      Result := year.ToString;</a>
+<a class="sourceLine" id="cb4-21" data-line-number="21">  <span class="kw">end</span></a>
+<a class="sourceLine" id="cb4-22" data-line-number="22">  <span class="kw">else</span></a>
+<a class="sourceLine" id="cb4-23" data-line-number="23">  <span class="kw">begin</span></a>
+<a class="sourceLine" id="cb4-24" data-line-number="24">    Julian := FMDateTimeToDateTime(ADateTime);</a>
+<a class="sourceLine" id="cb4-25" data-line-number="25">    DateTimeToString(Result, AFormat, Julian);</a>
+<a class="sourceLine" id="cb4-26" data-line-number="26">  <span class="kw">end</span></a>
+<a class="sourceLine" id="cb4-27" data-line-number="27"><span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb4-28" data-line-number="28"></a>
+<a class="sourceLine" id="cb4-29" data-line-number="29"><span class="kw">function</span> ImpreciseFMDateTime(ADateTime: TFMDateTime): <span class="dt">boolean</span>;</a>
+<a class="sourceLine" id="cb4-30" data-line-number="30"><span class="kw">var</span></a>
+<a class="sourceLine" id="cb4-31" data-line-number="31">  sDateTime: <span class="dt">string</span>;</a>
+<a class="sourceLine" id="cb4-32" data-line-number="32">  month, day: <span class="dt">Integer</span>;</a>
+<a class="sourceLine" id="cb4-33" data-line-number="33"><span class="kw">begin</span></a>
+<a class="sourceLine" id="cb4-34" data-line-number="34">  sDateTime := FloatToStrF(ADateTime, ffFixed, <span class="dv">14</span>, <span class="dv">6</span>);</a>
+<a class="sourceLine" id="cb4-35" data-line-number="35">  month := StrToInt(Copy(sDateTime, <span class="dv">4</span>, <span class="dv">2</span>));</a>
+<a class="sourceLine" id="cb4-36" data-line-number="36">  day   := StrToInt(Copy(sDateTime, <span class="dv">6</span>, <span class="dv">2</span>));</a>
+<a class="sourceLine" id="cb4-37" data-line-number="37">  <span class="kw">if</span> (month &gt; <span class="dv">0</span>) <span class="kw">and</span> (day &gt; <span class="dv">0</span>) <span class="kw">then</span> Result := <span class="kw">False</span></a>
+<a class="sourceLine" id="cb4-38" data-line-number="38">  <span class="kw">else</span> Result := <span class="kw">True</span>;</a>
+<a class="sourceLine" id="cb4-39" data-line-number="39"><span class="kw">end</span>;</a></code></pre></div>
+<p>Once I fixed this, I found my first Fileman bug: yyyy/mm is not interpreted by %DT as a valid date time; even though yyyy is, and yyyy/mm/dd is. We (OSEHRA) asked for George Timson's help, and now we have a new version of %DT that supports imprecise dates in the yyyy/mm format (<a href="mailto:OSEHRA-Sandbox/VistA-M@8b84302a44adcbb200ff403853928fbdce169044">OSEHRA-Sandbox/VistA-M@8b84302a44adcbb200ff403853928fbdce169044</a>).</p>
+<p>This solution is unfortunately not a complete solution; I will discuss that below.</p>
+<p>The next problem was more difficult to fix; and my fix is really not satisfactory; but I opted for doing it this way rather than do an extensive re-write of the code: The Problem List gets the dates from VistA, displays them on the screen, lets the user modify some of them, and then revalidates all the previous dates plus the user inputs against the server (ultimately, the validation uses %DT). The issue I found was that the server was sending and revalidating the US date format, as the problem list was not using the standard date APIs. I already asked Fileman to validate dates in the international format (&quot;I&quot; flag for %DT), so it was rejecting the dates the problem list package originally sent. E.g., 11/20/2012 is not a valid date in the &quot;I&quot; format, as there is no such thing as a 20th month. The easy fix was to make the problem list package send the correctly formatted dates for the locale it's in. The fix is in <code>EXTDT^GMPLX</code>. I added the first line, which will only activate if DUZ(&quot;LANG&quot;) is greater than 1.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode M"><code class="sourceCode matlab"><a class="sourceLine" id="cb5-1" data-line-number="1">EXTDT(DATE) ; Format External Date; OSE/SMH - updated to use standard API</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"> I $G(DUZ(&quot;LANG&quot;))&gt;<span class="fl">1</span> Q $$FMTE^XLFDT(DATE)</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"> N X,MM,DD,YY,YYY S X=&quot;&quot;,DATE=$P(DATE,&quot;.&quot;) Q:<span class="ch">&#39;DATE &quot;&quot;</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"> S MM=+$E(DATE,<span class="fl">4</span>,<span class="fl">5</span>),DD=+$E(DATE,<span class="fl">6</span>,<span class="fl">7</span>),YY=$E(DATE,<span class="fl">2</span>,<span class="fl">3</span>),YYY=$E(DATE,<span class="fl">1</span>,<span class="fl">3</span>)</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"> S:MM X=MM_&quot;/&quot; S:DD X=X_DD_&quot;/&quot; S X=$S($L(X):X_YY,<span class="fl">1</span>:<span class="fl">1700</span>+YYY)</a></code></pre></div>
+<p>With that change, the problem list now works reliably in a Korean Locale. But there is a bug now in the US locale, which I haven't fixed. If we have problems with imprecise dates, and we use CPRS with the US locale, VistA right now sends the external date as MM/YY, which when revalidated in VistA, can get converted to DD/MM. I noted the problem and I hope to fix it in the next phase of the project when I work again on CPRS.</p>
+<p>Overall, the solution is unsatisfactory. Most of CPRS sends Timson Formatted dates (a.k.a. Fileman dates) to the server, and that--like the Unix Epoch Format --does not change with locales as it is an internal storage format for dates. Problem List, while having all the Fileman dates at its disposal, does not use them to save the problem; it uses the external dates. The fix is obvious; but it requires a lot of changes in the Problems Delphi code.</p>
+<h2 id="step-5-cprs-vitals-dll">Step 5: CPRS Vitals DLL</h2>
+<p>The Vitals DLL ultimately posed similar problems as the Problem List; but first, we needed to get the source code. We didn't have the source code for the latest version of the Vitals DLL (<a href="https://foia-vista.osehra.org/Patches_By_Application/GMRV-VITALS/GMRV_5_37_SCRUBBED.zip" class="uri">https://foia-vista.osehra.org/Patches_By_Application/GMRV-VITALS/GMRV_5_37_SCRUBBED.zip</a>), but we got the version from last year first (<a href="https://foia-vista.osehra.org/Patches_By_Application/GMRV-VITALS/VITL5_P27_SOURCE_scrubbed.zip" class="uri">https://foia-vista.osehra.org/Patches_By_Application/GMRV-VITALS/VITL5_P27_SOURCE_scrubbed.zip</a>). From there, I made the same changes as before in CPRS. We eventually encountered a similar problem to the Problem List, but more insidious--and frankly, careless. The server side sent dates in MM-DD-YY format, and to convert that into Delphi/ Windows dates, it had to parse the date as a string. It turns out that MM-DD-YY is not a valid US Windows Date. The Delphi Code read the string date and replaced the - with / to produce MM/DD/YY which can be parsed by Windows (!). That obviously will not work for any other locale than the US locale; and the fact it works reliably is a miracle. As with the problem list, fixing this to do this properly requires more changes to the code than I was willing to make for this project. As a result, I opted for a similar solution: change the M date in order to use standard APIs for date formatting so that they can be interpreted by Windows. One extra change is that the US date format should be sent as MM/DD/YY; now we don't have to convert - to /--which destroys parsing for other locales. Again, it's an unsatisfactory solution; but I don't know whether I have a better one in the short amount of time I have to work on this module. The M code that got changed is in WRTDT^GMVLAT0 and DATE^GMVGGR2.</p>
+<p>I did find another problem that had to do with the standard Windows DateTime picker (TDateTimePicker in Delphi). It seems that you couldn't get the .MaxDate property twice in non-US locales. I get an error saying that my date is greater than max of 1899 something. I didn't have any time left to troubleshoot this, so I just fixed the code so that .MaxDate gets set once (and it really only needs to be set once).</p>
+<h2 id="step-6-cprs-alerts">Step 6: CPRS Alerts</h2>
+<p>This was an easy fix: the alert date time came from VistA and the code needed to be edited to send the correct date for the locale. The routine edited is ORWORB. Unfortunately, an unanticipated 'clever' trick in Delphi causes some problems. In order to sort alerts, the dates are reformatted from MM/DD/YYYY to YYYY/MM/DD to sort the alerts in reverse chronological order (latest first); and then the dates and converted back to MM/DD/YYYY. Well, if your date, like Korean, does not have &quot;/&quot;, then you will be in for a small surprise. A bug for another time.</p>
+<h1 id="result-of-the-work">Result of the Work</h1>
+<p>Here are some nice screenshots.</p>
+<figure>
+<img src="images/date14-final-cover-sheet.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Final Cover Sheet</p>
+</blockquote>
+<figure>
+<img src="images/date15-final-vitals.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Final Vitals</p>
+</blockquote>
+<figure>
+<img src="images/date16-orders.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Final Orders</p>
+</blockquote>
+<figure>
+<img src="images/date17-labs.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Final Labs</p>
+</blockquote>
+<figure>
+<img src="images/date18-reports.png" class="align-center" />
+</figure>
+<blockquote>
+<p>Final Reports</p>
+</blockquote>
+<h1 id="remaining-bugs">Remaining Bugs</h1>
+<p>In my last days testing this, I found 3 bugs in my work. I don't have time to fix them now; but I documented them in JIRA. Here they are:</p>
+<ul>
+<li>Inexact Year/month problem list item not portable across locales: I broke the US locale handling: If you save it once, and try to modify it, it won't save again properly. It will mangle the date. This has to do with the issue of round tripping this from VistA and back, going through Delphi display, and going back to VistA. E.g. 2011/08 will save into Vista as Aug 2011. In US locale, will be displayed in Delphi as 11/08. When resaved in VistA, will be interested as Aug 8 2018 (current year).</li>
+<li>Order Summary Report (Reports Tab) still has US dates on it. Probably an M side issue.</li>
+<li>Alert Dates do not show up correctly. The Delphi code mangles the dates from US mm/dd/yyyy format to yyyy/mm/dd to sort the notifications, and then unmangles back into mm/dd/yyyy. This will work for a US date; but if a date contains dashes, it makes the date look weird. This shows up in the notifications in CPRS.</li>
+</ul>
+<h1 id="summary-of-changes">Summary of Changes</h1>
+<h2 id="m-side">M-Side</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Routine</th>
+<th>Commit</th>
+<th>Change Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ORQQPL1</td>
+<td><a href="mailto:VistA-M@0c687b43e1e9b1badd4a89918a00836b259d78d1">VistA-M@0c687b43e1e9b1badd4a89918a00836b259d78d1</a></td>
+<td>Delimiter Change to valid Unicode</td>
+</tr>
+<tr class="even">
+<td>XLFDT</td>
+<td><a href="mailto:VistA-M@3553178098a324c0dfa57b5f4ca898e2b08b5058">VistA-M@3553178098a324c0dfa57b5f4ca898e2b08b5058</a></td>
+<td>XLFDT support for i18n dates</td>
+</tr>
+<tr class="odd">
+<td>0.85+LANGUAGE.zwr</td>
+<td><a href="mailto:VistA-M@3553178098a324c0dfa57b5f4ca898e2b08b5058">VistA-M@3553178098a324c0dfa57b5f4ca898e2b08b5058</a></td>
+<td>Fileman Date i18n. Calls UKOUTL.</td>
+</tr>
+<tr class="even">
+<td>UKOUTL</td>
+<td><a href="mailto:VistA-M@3553178098a324c0dfa57b5f4ca898e2b08b5058">VistA-M@3553178098a324c0dfa57b5f4ca898e2b08b5058</a></td>
+<td>New Routine</td>
+</tr>
+<tr class="odd">
+<td>GMVLAT0</td>
+<td><a href="mailto:VistA-M@e25743a581ea4a62efe48ee1495b2204929e48cc">VistA-M@e25743a581ea4a62efe48ee1495b2204929e48cc</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>ORQ20</td>
+<td><a href="mailto:VistA-M@c60cfd65b3a031d22448fdbf829b0faee2c71d08">VistA-M@c60cfd65b3a031d22448fdbf829b0faee2c71d08</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>ORU</td>
+<td><a href="mailto:VistA-M@170a6c563dcd88528cb8ffe1cda8c72ec0b535fa">VistA-M@170a6c563dcd88528cb8ffe1cda8c72ec0b535fa</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>GMPLX</td>
+<td><a href="mailto:VistA-M@e25743a581ea4a62efe48ee1495b2204929e48cc">VistA-M@e25743a581ea4a62efe48ee1495b2204929e48cc</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>TIULS</td>
+<td><a href="mailto:VistA-M@170a6c563dcd88528cb8ffe1cda8c72ec0b535fa">VistA-M@170a6c563dcd88528cb8ffe1cda8c72ec0b535fa</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>GMVGGR2</td>
+<td><a href="mailto:VistA-M@072ece422a448cdd2721baa39eb50b0a7421ef4e">VistA-M@072ece422a448cdd2721baa39eb50b0a7421ef4e</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>ORWORB</td>
+<td><a href="mailto:VistA-M@0cc977d9e3dd2361b353ac6ce5642d331fc1ef38">VistA-M@0cc977d9e3dd2361b353ac6ce5642d331fc1ef38</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>DIDT</td>
+<td><a href="mailto:VistA-M@8b84302a44adcbb200ff403853928fbdce169044">VistA-M@8b84302a44adcbb200ff403853928fbdce169044</a></td>
+<td>%DT from MSC Fileman</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cprs">CPRS</h2>
+<p>(Merge Commit 2379bc1f99c9e643f889eccde0ea143fb9ac3793)</p>
+<table>
+<thead>
+<tr class="header">
+<th>Unit</th>
+<th>Commit</th>
+<th>Change Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CPRS-Chart/uProbs.pas</td>
+<td><a href="mailto:VistA@7016ccbc5d1595afeb23e5bbe1c308a93ede1b9f">VistA@7016ccbc5d1595afeb23e5bbe1c308a93ede1b9f</a></td>
+<td>Delimiter Change</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/Consults/fConsults.pas</td>
+<td><a href="mailto:VistA@4f9712e219d847d3020a96e4658cfe883abde747">VistA@4f9712e219d847d3020a96e4658cfe883abde747</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/Consults/uConsults.pas</td>
+<td><a href="mailto:VistA@4f9712e219d847d3020a96e4658cfe883abde747">VistA@4f9712e219d847d3020a96e4658cfe883abde747</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/Encounter/fDiagnoses.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/Encounter/fEncVitals.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/Encounter/fEncounterFrame.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/Encounter/fPCEEdit.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/Encounter/uPCE.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/Options/fOptionsOther.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/Options/fOptionsSurrogate.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/Orders/fODAllgy.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/Orders/fODBBank.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/Orders/fODLab.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/Orders/fODMedIV.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/Orders/fODMedNVA.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/Orders/fODMeds.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/Orders/fOrderVw.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/Orders/fOrdersEvntRelease.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/Orders/rODAllergy.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/Templates/uTemplates.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/Vitals/uVitals.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/fARTAllgy.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/fDCSumm.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/fEncnt.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/fFrame.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/fGraphs.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/fLabs.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/fMeds.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/fNotes.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/fProbCmt.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/fProbEdt.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/fPtSel.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/fReports.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/fSurgery.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/fVitals.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/fvit.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/rCore.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/rReports.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/rTIU.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/uCaseTree.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/uCore.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/uDCSumm.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/uDocTree.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/uEventHooks.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/uProbs.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/uSurgery.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/uTIU.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Lib/ORDtTm.pas</td>
+<td><a href="mailto:VistA@93c19e67a6fdb3563222694770d613f25c3d11d7">VistA@93c19e67a6fdb3563222694770d613f25c3d11d7</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Lib/ORDtTmRng.pas</td>
+<td><a href="mailto:VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd">VistA@8f2864e18408a02031d2108cc50ca1647ebb84bd</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Lib/ORFn.pas</td>
+<td><a href="mailto:VistA@df3df42e6948f2f99d52ef5de0985d44507af1a7">VistA@df3df42e6948f2f99d52ef5de0985d44507af1a7</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Lib/fFrame.pas</td>
+<td><a href="mailto:VistA@cd92fc27dd8599d94f28b12d92cf942d8e63515c">VistA@cd92fc27dd8599d94f28b12d92cf942d8e63515c</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/Orders/rODLab.pas</td>
+<td><a href="mailto:VistA@377d59d52a85eb76e8dd0755e29fb1258c43cce7">VistA@377d59d52a85eb76e8dd0755e29fb1258c43cce7</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/fProbs.pas</td>
+<td><a href="mailto:VistA@377d59d52a85eb76e8dd0755e29fb1258c43cce7">VistA@377d59d52a85eb76e8dd0755e29fb1258c43cce7</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/rCore.pas</td>
+<td><a href="mailto:VistA@377d59d52a85eb76e8dd0755e29fb1258c43cce7">VistA@377d59d52a85eb76e8dd0755e29fb1258c43cce7</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/rCover.pas</td>
+<td><a href="mailto:VistA@377d59d52a85eb76e8dd0755e29fb1258c43cce7">VistA@377d59d52a85eb76e8dd0755e29fb1258c43cce7</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/rReports.pas</td>
+<td><a href="mailto:VistA@377d59d52a85eb76e8dd0755e29fb1258c43cce7">VistA@377d59d52a85eb76e8dd0755e29fb1258c43cce7</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/rSurgery.pas</td>
+<td><a href="mailto:VistA@377d59d52a85eb76e8dd0755e29fb1258c43cce7">VistA@377d59d52a85eb76e8dd0755e29fb1258c43cce7</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/rTIU.pas</td>
+<td><a href="mailto:VistA@377d59d52a85eb76e8dd0755e29fb1258c43cce7">VistA@377d59d52a85eb76e8dd0755e29fb1258c43cce7</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/Options/fOptionsReportsDefault.pas</td>
+<td><a href="mailto:VistA@93c19e67a6fdb3563222694770d613f25c3d11d7">VistA@93c19e67a6fdb3563222694770d613f25c3d11d7</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/Orders/fOrders.pas</td>
+<td><a href="mailto:VistA@23a92e7781857370a2893ccd1fd1a497db69f11c">VistA@23a92e7781857370a2893ccd1fd1a497db69f11c</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/fGraphs.pas</td>
+<td><a href="mailto:VistA@a0ea30f102c4c50d3b79f4d3498eb8033eb1c16d">VistA@a0ea30f102c4c50d3b79f4d3498eb8033eb1c16d</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>CPRS-Chart/fLabPrint.pas</td>
+<td><a href="mailto:VistA@a0ea30f102c4c50d3b79f4d3498eb8033eb1c16d">VistA@a0ea30f102c4c50d3b79f4d3498eb8033eb1c16d</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/fLabs.pas</td>
+<td><a href="mailto:VistA@a0ea30f102c4c50d3b79f4d3498eb8033eb1c16d">VistA@a0ea30f102c4c50d3b79f4d3498eb8033eb1c16d</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>VITALSDATAENTRY/fGMV_InputLite.pas</td>
+<td><a href="mailto:VistA@98ecfe4d8c4162998006083b21687ae951207ad5">VistA@98ecfe4d8c4162998006083b21687ae951207ad5</a></td>
+<td>MaxDate Property issue</td>
+</tr>
+<tr class="odd">
+<td>VITALSCOMMON/mGMV_MDateTime.pas</td>
+<td><a href="mailto:VistA@e92141043a01e0ec87fe8237f5a21e4ba996b8c0">VistA@e92141043a01e0ec87fe8237f5a21e4ba996b8c0</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>VITALSUTILS/uGMV_Common.pas</td>
+<td><a href="mailto:VistA@e92141043a01e0ec87fe8237f5a21e4ba996b8c0">VistA@e92141043a01e0ec87fe8237f5a21e4ba996b8c0</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>VITALSUTILS/uGMV_Const.pas</td>
+<td><a href="mailto:VistA@e92141043a01e0ec87fe8237f5a21e4ba996b8c0">VistA@e92141043a01e0ec87fe8237f5a21e4ba996b8c0</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="even">
+<td>VITALSVIEW/mGMV_GridGraph.pas</td>
+<td><a href="mailto:VistA@e92141043a01e0ec87fe8237f5a21e4ba996b8c0">VistA@e92141043a01e0ec87fe8237f5a21e4ba996b8c0</a></td>
+<td>Date i18n</td>
+</tr>
+<tr class="odd">
+<td>CPRS-Chart/fVitals.pas</td>
+<td><a href="mailto:VistA@e92141043a01e0ec87fe8237f5a21e4ba996b8c0">VistA@e92141043a01e0ec87fe8237f5a21e4ba996b8c0</a></td>
+<td>Date i18n</td>
+</tr>
+</tbody>
+</table>
+<h1 id="summary-of-phase-1">Summary of Phase 1</h1>
+<p>This project (CPRS Internationalization) started not knowing exactly all the items that could be addressed in the limited time frame. We addressed what we felt to be the major issues, which are the following:</p>
+<ol type="1">
+<li>CPRS Read/Write to VistA in Unicode</li>
+<li>CPRS Localization Strategy and Framework</li>
+<li>CPRS display of correct date format depending on Windows Locale</li>
+</ol>
+<p>There are some items that we couldn't do in the time allotted; but these should be easy to fix</p>
+<ol type="1">
+<li>Embedded strings in the source code were not converted to resourcestrings.</li>
+<li>Vitals displays imperial units in some places.</li>
+</ol>
+<h1 id="next-steps">Next Steps</h1>
+<p>Phase 2 involves M infrastructure (i.e. the Server) internationalization. It will involve more proper changes to some of the M code changed in Phase 1. Here are some of the tasks that we anticipate doing, time permitting:</p>
+<ul>
+<li>Move non-portable code in XWBRW to Kernel (use of $ZL, $ZE).</li>
+<li>Fix XLFNAME code to allow non-US names</li>
+<li>Localize Data in Fileman (e.g. Cover sheet headers)</li>
+<li>Localize Menu System</li>
+<li>Localize a simple workflow in Outpatient Pharmacy</li>
+<li>Put in Korean Lexicon and test with CPRS</li>
+</ul>
+</div>
+</body>
+</html>
