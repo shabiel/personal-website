@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Plan VI German Phase</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css" rel="stylesheet">
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<div class="grid-container">
+<header>
+<h1 class="title">Plan VI German Phase</h1>
+</header>
+<nav id="TOC">
+<ul>
+<li><a href="#name-and-numberspace">Name and Numberspace</a></li>
+<li><a href="#decimal-comma-project">Decimal Comma Project</a></li>
+<li><a href="#presentation-of-dates">Presentation of Dates</a></li>
+<li><a href="#using-the-translation-framework-across-locales">Using the Translation Framework across Locales</a></li>
+<li><a href="#generating-the-german-language-file">Generating the German Language File</a></li>
+<li><a href="#issues-found-that-were-not-addressed">Issues found that were not Addressed</a></li>
+<li><a href="#final-outputs">Final Outputs</a></li>
+</ul>
+</nav>
+<p><strong>Sam Habiel, Pharm.D.</strong>/ <strong>OSEHRA</strong>/ <strong>Mo, 24. Jun 2019 10:26:15</strong></p>
+<p>Per the original schedule for the project, there are only 3 weeks allocated for working on adapting German to VistA. As a result, I chose to dedicate these three weeks into CPRS, as this is what would be the most common exposure for most users trying it in Germany. To that end we focused on the following topics:</p>
+<ul>
+<li>CPRS currently crashes when run in any MS Windows Locale that use commas instead of dots as a decimal separator. This is actually true for half of the countries in the world, according to <a href="https://en.wikipedia.org/wiki/Decimal_separator">Wikipedia</a>; actually, by land mass, most countries seem to use a comma rather than a dot.</li>
+<li>This wasn't expected to take time: we needed to confirm that the changes for date handling made for Korean will be equally applicable to German.</li>
+<li>Previously, to save time, since we just focused on Korean, we hardcoded the Korean translation file into the CPRS exe. The objective here is to change the code so that CPRS will display the correct language based on the Windows locale.</li>
+<li>And, lastly, we wanted for a demo to show CPRS with German Labels</li>
+</ul>
+<p>For our discussions below, for commit references, the repos are:</p>
+<ul>
+<li><a href="https://github.com/OSEHRA-Sandbox/VistA">OSEHRA-Sandbox/VistA</a>.</li>
+<li><a href="https://github.com/OSEHRA-Sandbox/VistA-M">OSEHRA-Sandbox/VistA-M</a>.</li>
+</ul>
+<h1 id="name-and-numberspace">Name and Numberspace</h1>
+<p>We didn't need to use these except for one routine. The namespace for Germany in the VistA/RPMS world is UDE and the numberspace is 276.000.000 (inclusive) to 277.000.000 (exclusive).</p>
+<h1 id="decimal-comma-project">Decimal Comma Project</h1>
+<p>CPRS currently crashes when run in any MS Windows Locale that use commas instead of dots as a decimal separator.</p>
+<figure>
+<img src="images/dot-decimal-crash-in-german-locale.png" alt="CPRS Crashing on a Fileman Date that contains a dot for comma separtor" class="align-center" /><figcaption>CPRS Crashing on a Fileman Date that contains a dot for comma separtor</figcaption>
+</figure>
+<p>As apparent from the screenshot above, the issue has to do with parsing strings into Floating numbers and the reverse. The cause of the issue is that VistA sends data (primarily Fileman dates, Vitals &amp; lab data) with a dot for the decimal separator. In Windows locales, where a comma is the decimal separator, parsing it into a number does not work. We picked the German locale to demonstrate this issue; but we could have equally picked Norwegian, Italian, or French.</p>
+<p>Investigation reveals that the issue happens in four Delphi functions/procedures relating to Floating Point conversion:</p>
+<ul>
+<li><code>StrToFloat</code></li>
+<li><code>FloatToStr</code></li>
+<li><code>FloatToStrF</code></li>
+<li><code>TextToFloat</code></li>
+</ul>
+<p>There were three potential options on how this can be fixed.</p>
+<ol type="1">
+<li>Change data types to string rather than floats. This would have necessitated large amounts of code changes on the CPRS side, especially since many of the data types were used in function/method signatures.</li>
+<li>Send the data from M with commas instead of dots for decimal points. Perhaps we can argue that this is the most correct way of dealing with this problem. However, this necessitates an unimaginably large amount of code changes on the M side. Also, M has no concept of datatype at storage - therefore you cannot tell if the data that needs to be converted into a number is really numeric or not. Fileman can supply that information; but I am sure most CPRS calls are not going through Fileman; so that's not an option. I did check to see if Fileman had existing code to format decimals appropriately based on language; and it surprisingly does not.</li>
+<li>Our last option - each of the Delphi calls that crash accept a parameter specifying which locale to use when interpreting a float. So <code>StrToFloat(x)</code> becomes <code>StrToFloat(x, TFormatSettings.Create('en-US'))</code> to interpret a float using en-US locale.</li>
+</ol>
+<p>The last option, while affecting a large amount of files, was in the end the easiest way to solve this problem. Sed was used to automate the changing of the code. Here's what the sed script looked like for <code>StrToFloat</code> and <code>FloatToStr</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">for</span> <span class="ex">f</span> in <span class="va">$(</span><span class="ex">ack</span> -li <span class="st">&#39;StrToFloat\([^\),]+\)&#39;</span><span class="va">)</span><span class="kw">;do</span> <span class="fu">sed</span> -i -E <span class="st">&quot;s/(StrToFloat)\(([^\),]+)\)/\1\(\2, TFormatSettings.Create\(\&#39;en-US\&#39;\)\)/g&quot;</span> <span class="va">$f</span><span class="kw">;</span> <span class="kw">done</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="va">IFS=</span><span class="st">$&#39;</span><span class="dt">\n</span><span class="st">&#39;</span>; <span class="kw">for</span> <span class="ex">f</span> in <span class="va">$(</span><span class="ex">ack</span> -l <span class="st">&#39;FloatToStr\([^\),]+\)&#39;</span><span class="va">)</span><span class="kw">;</span> <span class="kw">do</span> <span class="fu">sed</span> -i -E <span class="st">&quot;s/(FloatToStr)\(([^\),]+)\)/\1\(\2, TFormatSettings.Create\(\&#39;en-US\&#39;\)\)/g&quot;</span> <span class="st">&quot;</span><span class="va">$f</span><span class="st">&quot;</span><span class="kw">;</span> <span class="kw">done</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="fu">git</span> status --short <span class="kw">|</span> <span class="fu">cut</span> -d <span class="st">&quot; &quot;</span> -f 3-8 <span class="kw">|</span> <span class="fu">xargs</span> unix2dos.exe</a></code></pre></div>
+<p>We needed to do this in the Vitals project as well. In total, 95 files were modified.</p>
+<p>The commits are in the OSEHRA-Sandbox/VistA repo:</p>
+<ul>
+<li><a href="mailto:OSEHRA-Sandbox/VistA@7d2948">OSEHRA-Sandbox/VistA@7d2948</a></li>
+<li><a href="mailto:OSEHRA-Sandbox/VistA@426887">OSEHRA-Sandbox/VistA@426887</a></li>
+<li><a href="mailto:OSEHRA-Sandbox/VistA@53f355">OSEHRA-Sandbox/VistA@53f355</a></li>
+<li><a href="mailto:OSEHRA-Sandbox/VistA@9e74bd">OSEHRA-Sandbox/VistA@9e74bd</a></li>
+<li><a href="mailto:OSEHRA-Sandbox/VistA@e88bec">OSEHRA-Sandbox/VistA@e88bec</a></li>
+<li><a href="mailto:OSEHRA-Sandbox/VistA@621a38">OSEHRA-Sandbox/VistA@621a38</a></li>
+</ul>
+<h1 id="presentation-of-dates">Presentation of Dates</h1>
+<p>A lot of issues that deal with dates in CPRS were extensively discussed <a href="https://www.osehra.org/post/cprs-date-display-and-summary-phase-1">here</a> and <a href="http://smh101.com/articles/p6/cprs-dates.html">duplicated here</a>. Our work here is to validate that the same changes will work on the German locale.</p>
+<p>Happily that was indeed the case. The code to handle German dates on Fileman already existed; so we didn't need to write it -- however, it had three p Our work here is to validate that the same changes will work on the German locale.</p>
+<p>Happily that was indeed the case. The code to handle German dates on Fileman already existed; so we didn't need to write it -- however, it had three problems that needed to be fixed:</p>
+<ol type="1">
+<li>Fileman has a redundant date node in the language file in &quot;FMTE&quot; in addition to &quot;DD&quot;. That needed to be filled out.</li>
+<li>The DD code needs to put an &quot;@&quot; between the date &amp; time rather than a space. If you don't do that, %DT cannot parse the date back. While as mentioned in the extensive date changes blog post linked to earlier, problem list &amp; vitals both have the problem of relying on what I call &quot;round-tripping&quot; of dates (sending external dates &amp; then receiving them back and expecting to be able to parse them) -- I found the issue inside the M code in the Scheduling package when it tries to retrieve appointments: it converted dates to external form and parsed them back to validate them.</li>
+<li>The date parser entry for German was not there.</li>
+</ol>
+<p>There's a commit in the VistA-M repo to fix this: <a href="mailto:OSEHRA-Sandbox/VistA-M@8391a1">OSEHRA-Sandbox/VistA-M@8391a1</a>.</p>
+<p>The fields in the language file that need to be changed are:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Field Number</th>
+<th>Field Name</th>
+<th>Entry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>10.2</td>
+<td>Date/Time Format</td>
+<td><code>S:Y Y=$S($E(Y,6,7):$E(Y,6,7)_&quot;.&quot;,1:&quot;&quot;)_$S($E(Y,4,5):$E(Y,4,5)_&quot;.&quot;,1:&quot;&quot;)_($E(Y,1,3)+1700)_$P(&quot;@&quot;_$E(Y_0,9,10)_&quot;:&quot;_$E(Y_&quot;000&quot;,11,12)_$S($E(Y,13,14):&quot;:&quot;_$E(Y_0,13,14),1:&quot;&quot;),&quot;^&quot;,Y[&quot;.&quot;)</code></td>
+</tr>
+<tr class="even">
+<td>10.21</td>
+<td>Date/Time Format (FMTE)</td>
+<td><code>S:Y Y=$S($E(Y,6,7):$E(Y,6,7)_&quot;.&quot;,1:&quot;&quot;)_$S($E(Y,4,5):$E(Y,4,5)_&quot;.&quot;,1:&quot;&quot;)_($E(Y,1,3)+1700)_$P(&quot;@&quot;_$E(Y_0,9,10)_&quot;:&quot;_$E(Y_&quot;000&quot;,11,12)_$S($E(Y,13,14):&quot;:&quot;_$E(Y_0,13,14),1:&quot;&quot;),&quot;^&quot;,Y[&quot;.&quot;)</code></td>
+</tr>
+<tr class="odd">
+<td>20.2</td>
+<td>Date Input</td>
+<td><code>S:$G(%DT)'[&quot;I&quot; %DT=$G(%DT)_&quot;I&quot; G CONT^%DT</code></td>
+</tr>
+</tbody>
+</table>
+<p>Here's a screenshot of Vitals with the German Dates and Decimal Comma. I am aware that some numbers are not parsed and still show the dot in the number for a decimal point. This is an issue that can be easily solved by parsing these numbers, but it's not something I pursued given the limited amount of time.</p>
+<figure>
+<img src="images/comma-decimal-date-demo.png" alt="Demo showing German Dates and Decimal Comma" class="align-center" /><figcaption>Demo showing German Dates and Decimal Comma</figcaption>
+</figure>
+<h1 id="using-the-translation-framework-across-locales">Using the Translation Framework across Locales</h1>
+<p>Previously, our work to use the translation framework hardcoded Korean as the language. Now we use the Win32 <code>GetLocaleInfo</code> call with flags <code>LOCALE_USER_DEFAULT</code> and <code>LOCALE_SNAME</code> to get a Unix style locale code like &quot;de-DE&quot; for German in Germany; or &quot;de-CH&quot; for German in Switzerland. We now take the first piece (&quot;de&quot;) and set that as the translation file in the Kryvich framework when CPRS starts up (the full translation file name would be CPRSChart.de.lng). This way CPRS changes its display language based on the Windows display language. Here is the Delphi code:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">function</span> GetWindowsLanguage(LCTYPE: LCTYPE <span class="co">{type of information}</span>): <span class="dt">string</span>;</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">var</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">  Buffer : PChar;</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">  Size : <span class="dt">integer</span>;</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">begin</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">  Size := GetLocaleInfo (LOCALE_USER_DEFAULT, LCType, <span class="kw">nil</span>, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">  GetMem(Buffer, Size);</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">  <span class="kw">try</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">    GetLocaleInfo (LOCALE_USER_DEFAULT, LCTYPE, Buffer, Size);</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">    Result := <span class="dt">string</span>(Buffer);</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">  <span class="kw">finally</span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">    FreeMem(Buffer);</a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">  <span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="kw">end</span>;</a></code></pre></div>
+<p>...and</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="ot">{$IFDEF KRYVICH}</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">var</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">  sLocale, sUserLang, sLangFile: <span class="dt">string</span>;</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="ot">{$ENDIF}</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw">begin</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">  <span class="kw">if</span> <span class="kw">not</span> BorlandDLLVersionOK <span class="kw">then</span> <span class="kw">exit</span>;         <span class="co">// Exit immediately if old or missing BORLNDMM.DLL</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co">//    RegisterCPRSTypeLibrary;                      // will halt program if /regserver or /unregserver param</span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9">  Application.Initialize;</a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="ot">{$IFDEF KRYVICH}</span></a>
+<a class="sourceLine" id="cb3-12" data-line-number="12">  sLocale := GetWindowsLanguage(LOCALE_SNAME);</a>
+<a class="sourceLine" id="cb3-13" data-line-number="13">  sUserLang := Piece(sLocale, <span class="st">&#39;-&#39;</span>, <span class="dv">1</span>);</a>
+<a class="sourceLine" id="cb3-14" data-line-number="14">  sLangFile := <span class="st">&#39;CPRSChart.&#39;</span> + sUserLang + <span class="st">&#39;.lng&#39;</span>;</a>
+<a class="sourceLine" id="cb3-15" data-line-number="15">  FreeLocalizer.AutoTranslate := <span class="kw">True</span>;</a>
+<a class="sourceLine" id="cb3-16" data-line-number="16">  FreeLocalizer.LanguageFile := sLangFile;</a>
+<a class="sourceLine" id="cb3-17" data-line-number="17"><span class="ot">{$ENDIF}</span></a></code></pre></div>
+<p>Since in our project the start-up happens in the project file (.dpr) which is generated by CMake, I needed to redo the .dpr.in file. The commits in the repo are as follows:</p>
+<ul>
+<li><a href="mailto:OSEHRA-Sandbox/VistA@76e713">OSEHRA-Sandbox/VistA@76e713</a></li>
+<li><a href="mailto:OSEHRA-Sandbox/VistA@288e29">OSEHRA-Sandbox/VistA@288e29</a></li>
+</ul>
+<h1 id="generating-the-german-language-file">Generating the German Language File</h1>
+<p>The above change will load the German translation for CPRS at runtime -- if one exists. I created one quickly using the <a href="https://www.microsoft.com/en-us/translator/business/translator-api/">Microsoft Translate API</a> using <a href="https://github.com/OSEHRA-Sandbox/VistA-M/blob/plan-vi/Packages/Germany%20Specific%20Modifications/Routines/UDEP6TRA.m">this code</a>. The result is <a href="https://github.com/OSEHRA-Sandbox/VistA/blob/plan-vi/Packages/Order%20Entry%20Results%20Reporting/CPRS/CPRS-Chart/Translations/kryvich/CPRSChart.de.lng">this file</a>. Here's a CPRS Screenshot with the German:</p>
+<figure>
+<img src="images/cprs-german-labels.png" alt="CPRS with German Labels" class="align-center" /><figcaption>CPRS with German Labels</figcaption>
+</figure>
+<h1 id="issues-found-that-were-not-addressed">Issues found that were not Addressed</h1>
+<p>As described in the <a href="#decimal-comma-project">Decimal Comma Project</a> section above, the decimal comma issue on the M side was not addressed. Uppercasing/Lowercasing functions in VistA were not modified. They currently can handle ASCII only. Use vendor $Z functions ($ZCO for GT.M-YDB/$ZCVT for Caché) in the two places that VistA does uppercasing (XLFSTR &amp; DILIBF) will easily solve the problem. Discussions are underway to add the $Z functions to the Fileman Operating System file in order for Fileman code in the language file to be runnable on all systems.</p>
+<h1 id="final-outputs">Final Outputs</h1>
+<p>The CPRS exe and the Vitals Entry dll have been updated with the changes to handle decimal commas and the changes to dynamically load the language file based on the Windows user locale. They can be found <a href="https://github.com/OSEHRA-Sandbox/VistA/releases/download/cprs31a-utf8-d/CPRSChart-Plan6-decimal-comma.zip">here</a>. All the changes are backwards compatible with the previous version of CPRS that was released.</p>
+<p>The repos have been updated with the latest code, but there is no new KIDs file or new docker image at this moment.</p>
+<ul>
+<li><a href="https://github.com/OSEHRA-Sandbox/VistA">OSEHRA-Sandbox/VistA</a>.</li>
+<li><a href="https://github.com/OSEHRA-Sandbox/VistA-M">OSEHRA-Sandbox/VistA-M</a>.</li>
+</ul>
+</div>
+</body>
+</html>
