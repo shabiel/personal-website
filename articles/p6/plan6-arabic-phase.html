@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Plan VI Arabic (&amp; others) Phase</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="figure.css">
+</head>
+<body>
+<div class="grid-container">
+<header>
+<h1 class="title">Plan VI Arabic (&amp; others) Phase</h1>
+</header>
+<nav id="TOC">
+<ul>
+<li><a href="#unfinished-business">Unfinished Business</a></li>
+<li><a href="#steps-for-implementing-cprs-in-your-own-language">Steps for Implementing CPRS in your own Language</a></li>
+<li><a href="#language-file-.85-entries">Language file (#.85) Entries</a></li>
+<li><a href="#patient-registration">Patient Registration</a></li>
+<li><a href="#screenshots">Screenshots</a></li>
+</ul>
+</nav>
+<p><strong>Sam Habiel, Pharm.D.</strong>/ <strong>OSEHRA</strong>/ <strong>6 Aug 2019</strong></p>
+<p>This is the last blog post in the Plan-VI project. We describe how to apply the work of the last year to new languages. We also take the opportunity as well to show VistA CPRS with a few of these languages. We have previously shown Korean and German. In this post, we will show:</p>
+<ul>
+<li>French</li>
+<li>Italian</li>
+<li>Russian</li>
+<li>Arabic</li>
+</ul>
+<h1 id="unfinished-business">Unfinished Business</h1>
+<p>In the previous blog post (<a href="http://smh101.com/articles/p6/plan6-german-phase.html">here</a>, or <a href="https://www.osehra.org/post/plan-vi-summary-german-phase">mirrored here</a>), I mentioned that I would leave the exercise of uppercasing/lowercasing non-English languages as an exercise to the reader. However, in preparing a demo for Russian, I needed the code in order for Russian to uppercase properly.</p>
+<p>So here it is. You need to add code to the Language file (#.85) and modify XLFSTR. For the language file portion, the code differs between Caché and GT.M/ YottaDB. The code is as follows that needs to be added to the Language file:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Field Number</th>
+<th>Field Name</th>
+<th>Caché Code</th>
+<th>GT.M/YDB Code</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>10.4</td>
+<td>Uppercase Conversion</td>
+<td>S Y=$ZCVT(Y,&quot;U&quot;)</td>
+<td>S Y=$ZCO(Y,&quot;U&quot;)</td>
+</tr>
+<tr class="even">
+<td>10.5</td>
+<td>Lowercase Conversion</td>
+<td>S Y=$ZCVT(Y,&quot;L&quot;)</td>
+<td>S Y=$ZCO(Y,&quot;L&quot;)</td>
+</tr>
+</tbody>
+</table>
+<p>And here is the modified XLFSTR (now committed to the plan-vi repo):</p>
+<figure>
+<img src="images/xlfstr-with-i18n-case-conversions.png" alt="XLFSTR with Case Conversions" class="align-center" /><figcaption>XLFSTR with Case Conversions</figcaption>
+</figure>
+<p>The added lines are:</p>
+<pre><code>UP+1: I $G(DUZ(&quot;LANG&quot;))&gt;1 Q $$OUT^DIALOGU(X,&quot;UC&quot;)
+LOW+1: I $G(DUZ(&quot;LANG&quot;))&gt;1 Q $$OUT^DIALOGU(X,&quot;LC&quot;)</code></pre>
+<h1 id="steps-for-implementing-cprs-in-your-own-language">Steps for Implementing CPRS in your own Language</h1>
+<ol type="1">
+<li>Copy CPRSChart.lng file, appending a suffix before .lng for the two letter language name. E.g. CPRSChart.ar.lng for Arabic.</li>
+<li>Translate the strings after the = sign starting at line 9. For demonstration purposes, I used a routine I wrote (<a href="https://github.com/OSEHRA-Sandbox/VistA-M/blob/plan-vi/Packages/Germany%20Specific%20Modifications/Routines/UDEP6TRA.m">UDEP6TRA</a>) to do machine translations of the file.</li>
+<li>Create Language file entries for DI, DD, FMTE, LC, and UC for the language. More on that in the next section.</li>
+<li>Set language in VistA in the DEFAULT LANGUAGE (#207) field in the KERNEL SYSTEM PARAMETERS file (#8989.3); or alternately you can set it at the user level in the LANGUAGE (#200) field in the NEW PERSON (#200) file.</li>
+</ol>
+<h1 id="language-file-.85-entries">Language file (#.85) Entries</h1>
+<p>For the language that you plan to use, you need to set-up the following fields in the language file, as appropriate to your language:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Field Name</th>
+<th>Field Number</th>
+<th>Short Name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Date/Time Format</td>
+<td>10.2</td>
+<td>DD</td>
+</tr>
+<tr class="even">
+<td>Date/Time Format (FMTE)</td>
+<td>10.21</td>
+<td>FMTE</td>
+</tr>
+<tr class="odd">
+<td>Date Input</td>
+<td>20.2</td>
+<td>DI</td>
+</tr>
+<tr class="even">
+<td>Uppercase Conversion</td>
+<td>10.4</td>
+<td>UC</td>
+</tr>
+<tr class="odd">
+<td>Lowercase Conversion</td>
+<td>10.5</td>
+<td>LC</td>
+</tr>
+</tbody>
+</table>
+<p>If your language does not have case, there is no need for you to fill UC and LC. DI will tend to be always the same for most languages (the only exception is that if you already use the US date format in your country; if that case, just leave it blank). And you always put the same code in FMTE as DD. Practically then, you only need to modify DD/FMTE to for each language.</p>
+<p>Let's discuss what you need to put in:</p>
+<p>UC &amp; LC: discussed above.</p>
+<p>DI: <code>S:$G(%DT)'[&quot;I&quot; %DT=$G(%DT)_&quot;I&quot; G CONT^%DT</code></p>
+<p>DD &amp; FMTE: These differ by date output format for language. Here are the languages we put into VistA and their FMTE:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Language</th>
+<th>Date Format</th>
+<th>DD &amp; FMTE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>German</td>
+<td>dd.mm.yyyy</td>
+<td><code>S:Y Y=$S($E(Y,6,7):$E(Y,6,7)_&quot;.&quot;,1:&quot;&quot;)_$S($E(Y,4,5):$E(Y,4,5)_&quot;.&quot;,1:&quot;&quot;)_($E(Y,1,3)+1700)_$P(&quot;@&quot;_$E(Y_0,9,10)_&quot;:&quot;_$E(Y_&quot;000&quot;,11,12)_$S($E(Y,13,14):&quot;:&quot;_$E(Y_0,13,14),1:&quot;&quot;),&quot;^&quot;,Y[&quot;.&quot;)</code></td>
+</tr>
+<tr class="even">
+<td>French</td>
+<td>dd/mm/yyyy</td>
+<td><code>S:Y Y=$S($E(Y,6,7):$E(Y,6,7)_&quot;/&quot;,1:&quot;&quot;)_$S($E(Y,4,5):$E(Y,4,5)_&quot;/&quot;,1:&quot;&quot;)_($E(Y,1,3)+1700)_$P(&quot;@&quot;_$E(Y_0,9,10)_&quot;:&quot;_$E(Y_&quot;000&quot;,11,12)_$S($E(Y,13,14):&quot;:&quot;_$E(Y_0,13,14),1:&quot;&quot;),&quot;^&quot;,Y[&quot;.&quot;)</code></td>
+</tr>
+<tr class="odd">
+<td>Italian</td>
+<td>dd/mm/yyyy</td>
+<td><code>S:Y Y=$S($E(Y,6,7):$E(Y,6,7)_&quot;/&quot;,1:&quot;&quot;)_$S($E(Y,4,5):$E(Y,4,5)_&quot;/&quot;,1:&quot;&quot;)_($E(Y,1,3)+1700)_$P(&quot;@&quot;_$E(Y_0,9,10)_&quot;:&quot;_$E(Y_&quot;000&quot;,11,12)_$S($E(Y,13,14):&quot;:&quot;_$E(Y_0,13,14),1:&quot;&quot;),&quot;^&quot;,Y[&quot;.&quot;)</code></td>
+</tr>
+<tr class="even">
+<td>Russian</td>
+<td>dd.mm.yyyy</td>
+<td><code>S:Y Y=$S($E(Y,6,7):$E(Y,6,7)_&quot;.&quot;,1:&quot;&quot;)_$S($E(Y,4,5):$E(Y,4,5)_&quot;.&quot;,1:&quot;&quot;)_($E(Y,1,3)+1700)_$P(&quot;@&quot;_$E(Y_0,9,10)_&quot;:&quot;_$E(Y_&quot;000&quot;,11,12)_$S($E(Y,13,14):&quot;:&quot;_$E(Y_0,13,14),1:&quot;&quot;),&quot;^&quot;,Y[&quot;.&quot;)</code></td>
+</tr>
+<tr class="odd">
+<td>Arabic</td>
+<td>dd/mm/yyyy</td>
+<td><code>S:Y Y=$S($E(Y,6,7):$E(Y,6,7)_&quot;/&quot;,1:&quot;&quot;)_$S($E(Y,4,5):$E(Y,4,5)_&quot;/&quot;,1:&quot;&quot;)_($E(Y,1,3)+1700)_$P(&quot;@&quot;_$E(Y_0,9,10)_&quot;:&quot;_$E(Y_&quot;000&quot;,11,12)_$S($E(Y,13,14):&quot;:&quot;_$E(Y_0,13,14),1:&quot;&quot;),&quot;^&quot;,Y[&quot;.&quot;)</code></td>
+</tr>
+<tr class="even">
+<td>Korean</td>
+<td>yyyy/mm/dd</td>
+<td><code>S Y=$$FMTE^UKOUTL(Y,$G(%F))</code></td>
+</tr>
+</tbody>
+</table>
+<h1 id="patient-registration">Patient Registration</h1>
+<p>I did nothing special here. I registered a few patients with non-Engilsh names for testing: SCHÄFER,MARTA (German), ДМИТРИЕВНА,АННА (Cyrillic), and حليم,أبتسام (Arabic). Our changes from the Korean phase of the project to the DPTLK* and XLFNAME* routines that handle name entry needed no further improvements.</p>
+<h1 id="screenshots">Screenshots</h1>
+<p>Here are some screenshots I have taken with various languages.</p>
+<figure>
+<img src="images/screenshots-01-french.png" alt="French Cover Sheet" class="align-center" /><figcaption>French Cover Sheet</figcaption>
+</figure>
+<figure>
+<img src="images/screenshots-02-italian.png" alt="Italian Cover Sheet" class="align-center" /><figcaption>Italian Cover Sheet</figcaption>
+</figure>
+<figure>
+<img src="images/screenshots-03-russian.png" alt="Russian Notes Tab" class="align-center" /><figcaption>Russian Notes Tab</figcaption>
+</figure>
+<figure>
+<img src="images/screenshots-04-patient-selection.png" alt="Patient Selection show patients in Multiple Languages" class="align-center" /><figcaption>Patient Selection show patients in Multiple Languages</figcaption>
+</figure>
+<figure>
+<img src="images/screenshots-05-arabic-note-multiple-languages.png" alt="Arabic Notes Tab with Note containing Mutiple Languages" class="align-center" /><figcaption>Arabic Notes Tab with Note containing Mutiple Languages</figcaption>
+</figure>
+<figure>
+<img src="images/screenshots-06-arabic-orders.png" alt="Arabic Orders Tab" class="align-center" /><figcaption>Arabic Orders Tab</figcaption>
+</figure>
+<p>Side note: I had an unexpected problem with Russian, seen in this screenshot:</p>
+<figure>
+<img src="images/screenshots-07-russian-blank-tabs.png" alt="Blank labels on Tabs when the text on the tabs is Russian." class="align-center" /><figcaption>Blank labels on Tabs when the text on the tabs is Russian.</figcaption>
+</figure>
+<p>This turned out to be a <a href="https://www.ghisler.ch/board/viewtopic.php?t=45290">previously reported problem</a> with the font &quot;MS Sans Serif&quot;. Apparently it is not a true type font; surprisingly, changing the font of the bottom tabs to the similarly named &quot;Microsoft Sans Serif&quot; fixes the problem.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+figure {
+  display: block;
+  #text-align: center;
+  margin: 1em 0;
+}
+
+figure img {
+  border: none;
+  margin: 0;
+}
+
+figcaption {
+  font-size: 0.8em;
+  font-style: italic;
+  margin: 0 0 .8em;
+}

@@ -71,6 +71,7 @@ code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <link rel="stylesheet" href="figure.css">
 </head>
 <body>
 <div class="grid-container">
@@ -113,35 +114,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>While date handling was consistent in each part of CPRS; there is little consistency between the parts.</p>
 <p>Some screenshots of previous CPRS Date Handling (i.e. previous to this work)</p>
 <figure>
-<img src="images/date01-problem-detail.png" class="align-center" />
+<img src="images/date01-problem-detail.png" alt="Dates in Problem Detail" class="align-center" /><figcaption>Dates in Problem Detail</figcaption>
 </figure>
-<blockquote>
-<p>Dates in Problem Detail</p>
-</blockquote>
 <figure>
-<img src="images/date02-vitals-lite.png" class="align-center" />
+<img src="images/date02-vitals-lite.png" alt="Dates in Vitals Lite" class="align-center" /><figcaption>Dates in Vitals Lite</figcaption>
 </figure>
-<blockquote>
-<p>Dates in Vitals Lite</p>
-</blockquote>
 <figure>
-<img src="images/date03-reports-date-ranages.png" class="align-center" />
+<img src="images/date03-reports-date-ranages.png" alt="Reports Date Ranges" class="align-center" /><figcaption>Reports Date Ranges</figcaption>
 </figure>
-<blockquote>
-<p>Reports Date Ranges</p>
-</blockquote>
 <figure>
-<img src="images/date04-orders-tab.png" class="align-center" />
+<img src="images/date04-orders-tab.png" alt="Orders Tab" class="align-center" /><figcaption>Orders Tab</figcaption>
 </figure>
-<blockquote>
-<p>Orders Tab</p>
-</blockquote>
 <figure>
-<img src="images/date05-notes-tab.png" class="align-center" />
+<img src="images/date05-notes-tab.png" alt="Notes Tab" class="align-center" /><figcaption>Notes Tab</figcaption>
 </figure>
-<blockquote>
-<p>Notes Tab</p>
-</blockquote>
 <h1 id="first-a-detour">First, a Detour</h1>
 <p>Our previous work took us into making CPRS talk to the server in Unicode. It turns out that we missed a spot. I noticed that the Problem List tab occasionally crashed when I edited a problem. I actually was told about this problem by somebody else about 4 years ago when they ran VistA in UTF-8 mode with no other changes. I was surprised that I didn't find it till now. It turns out that CPRS and the server both had a delimiter of ASCII 255 ($C(255) in M) for passing data between themselves for edited problems. ONLY when editing problems. ASCII 255 is not a valid code point in Unicode, and crashes happen encoding and decoding strings with ASCII 255--the data was sent in a format like this: old data-255-new data.</p>
 <p>The fix was easy: replace ASCII 255 with a valid Unicode code point. A pipe (|) is not used in the context of the code (and usually is not found in any Fileman Data)--so I chose that. I could have also chosen a tilde (~). This was a tiny change in routine ORQQPL1 and pascal unit uProbs.pas.</p>
@@ -163,51 +149,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Go to EVE &gt; Operations Management &gt; Kernel Management Menu &gt; Enter/Edit Kernel Site Parameters, and switch the language.</li>
 </ol>
 <figure>
-<img src="images/date06-ksp.png" class="align-center" />
+<img src="images/date06-ksp.png" alt="Kernel System Parameters Change to Korean" class="align-center" /><figcaption>Kernel System Parameters Change to Korean</figcaption>
 </figure>
-<blockquote>
-<p>Kernel System Parameters Change to Korean</p>
-</blockquote>
 <ol start="2" type="1">
 <li>In the Language (#.85) file, for Korean, add these entries for fields DATE INPUT, DATE/TIME FORMAT, DATE/TIME FORMAT (FMTE) (NB: I asked G Timson why we have two different fields that do the output; the reason is lost in the past now.)</li>
 </ol>
 <figure>
-<img src="images/date07-fm-lang-file-nodes.png" class="align-center" />
+<img src="images/date07-fm-lang-file-nodes.png" alt="Fileman Language Nodes" class="align-center" /><figcaption>Fileman Language Nodes</figcaption>
 </figure>
-<blockquote>
-<p>Fileman Language Nodes</p>
-</blockquote>
 <ol start="3" type="1">
 <li>The fields reference a new routine. Here are its contents. I came up with the contents after reading DILIBF, various experiments and lots of testing.</li>
 </ol>
 <figure>
-<img src="images/date08-ukoutl.png" class="align-center" />
+<img src="images/date08-ukoutl.png" alt="UKOUTL" class="align-center" /><figcaption>UKOUTL</figcaption>
 </figure>
-<blockquote>
-<p>UKOUTL</p>
-</blockquote>
 <ol start="4" type="1">
 <li>Fix XLFDT:</li>
 </ol>
 <figure>
-<img src="images/date09-xlfdt.png" class="align-center" />
+<img src="images/date09-xlfdt.png" alt="XLFDT" class="align-center" /><figcaption>XLFDT</figcaption>
 </figure>
-<blockquote>
-<p>XLFDT</p>
-</blockquote>
 <p>The result looks like this: very nice, I must say!</p>
 <figure>
-<img src="images/date10-result1.png" class="align-center" />
+<img src="images/date10-result1.png" alt="Result 1" class="align-center" /><figcaption>Result 1</figcaption>
 </figure>
-<blockquote>
-<p>Result 1</p>
-</blockquote>
 <figure>
-<img src="images/date11-result2.png" class="align-center" />
+<img src="images/date11-result2.png" alt="Result 2" class="align-center" /><figcaption>Result 2</figcaption>
 </figure>
-<blockquote>
-<p>Result 2</p>
-</blockquote>
 <p>This fixes a significant number of dates. But alas, much of the VistA code predates the XLFDT API. So for a select small number of routines, we made some fixes to call XLFDT if DUZ(&quot;LANG&quot;)&gt;1 (to preserve backwards compatibility with US English): DATE^TIULS, DATE^ORU, DATE^ORQ20. Problem List needed a change, which while identical, needs to be explained in more depth: EXTDT^GMPLX; Vitals has a similar issue: WRTDT^GMVLAT0 is simple; but DATE^GMVGGR2 needs to be explained. I didn't come up with this list by scanning VistA: I tested CPRS and found out what works and what doesn't.</p>
 <p>If you now run CPRS against VistA configured thus in Korean, you will see that all reports show the correct date format for Korean. Our next step is to look at date displays done by CPRS.</p>
 <h2 id="step-2-investigation-of-windows-dates">Step 2: Investigation of Windows Dates</h2>
@@ -218,17 +186,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>dddddd -&gt; Long Date</li>
 </ul>
 <figure>
-<img src="images/date12-delphi-exp1.png" class="align-center" />
+<img src="images/date12-delphi-exp1.png" alt="First Screen" class="align-center" /><figcaption>First Screen</figcaption>
 </figure>
-<blockquote>
-<p>First Screen</p>
-</blockquote>
 <figure>
-<img src="images/date13-dephi-exp2.png" class="align-center" />
+<img src="images/date13-dephi-exp2.png" alt="Second Screen" class="align-center" /><figcaption>Second Screen</figcaption>
 </figure>
-<blockquote>
-<p>Second Screen</p>
-</blockquote>
 <p>From this experiment, you will notice that the short dates always include the 4 digit year; and long dates can sometimes be too long. So how would we shoehorn CPRS into the two standard formats for all locales?</p>
 <p>It took me a couple of weeks to come to this realization: The problem is not really solvable in the current format, as the dates for each country that Windows supplies do not map neatly to the formats that CPRS users. In any case, we want backwards compatibility with the current way CPRS runs (i.e. it should not appear different); but there is no consistency in how dates are actually handled in CPRS. I found out that you can adjust the &quot;Short Date&quot; and &quot;Long Date&quot; format in Delphi--and I finally came up with a solution: for the US Locale, we will keep a dichotomy between short and long dates. For other locales, we will only use one date format, the one decided by Windows as the &quot;Short&quot; date format.</p>
 <h2 id="step-3-converting-cprs-date-formats">Step 3: Converting CPRS Date Formats</h2>
@@ -392,35 +354,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1 id="result-of-the-work">Result of the Work</h1>
 <p>Here are some nice screenshots.</p>
 <figure>
-<img src="images/date14-final-cover-sheet.png" class="align-center" />
+<img src="images/date14-final-cover-sheet.png" alt="Final Cover Sheet" class="align-center" /><figcaption>Final Cover Sheet</figcaption>
 </figure>
-<blockquote>
-<p>Final Cover Sheet</p>
-</blockquote>
 <figure>
-<img src="images/date15-final-vitals.png" class="align-center" />
+<img src="images/date15-final-vitals.png" alt="Final Vitals" class="align-center" /><figcaption>Final Vitals</figcaption>
 </figure>
-<blockquote>
-<p>Final Vitals</p>
-</blockquote>
 <figure>
-<img src="images/date16-orders.png" class="align-center" />
+<img src="images/date16-orders.png" alt="Final Orders" class="align-center" /><figcaption>Final Orders</figcaption>
 </figure>
-<blockquote>
-<p>Final Orders</p>
-</blockquote>
 <figure>
-<img src="images/date17-labs.png" class="align-center" />
+<img src="images/date17-labs.png" alt="Final Labs" class="align-center" /><figcaption>Final Labs</figcaption>
 </figure>
-<blockquote>
-<p>Final Labs</p>
-</blockquote>
 <figure>
-<img src="images/date18-reports.png" class="align-center" />
+<img src="images/date18-reports.png" alt="Final Reports" class="align-center" /><figcaption>Final Reports</figcaption>
 </figure>
-<blockquote>
-<p>Final Reports</p>
-</blockquote>
 <h1 id="remaining-bugs">Remaining Bugs</h1>
 <p>In my last days testing this, I found 3 bugs in my work. I don't have time to fix them now; but I documented them in JIRA. Here they are:</p>
 <ul>
