@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Plan VI Final Write-up for Korean Phase</title>
+  <title>Plan VI Final Summary</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css" rel="stylesheet">
   <link rel="stylesheet" href="figure.css">
 </head>
 <body>
 <div class="grid-container">
 <header>
-<h1 class="title">Plan VI Final Write-up for Korean Phase</h1>
+<h1 class="title">Plan VI Final Summary</h1>
 </header>
 <nav id="TOC">
 <ul>
@@ -23,6 +23,7 @@
 <li><a href="#cprs-localization-strategy-and-framework">CPRS Localization Strategy and Framework</a></li>
 <li><a href="#cprs-problem-list-editing-issue">CPRS Problem List Editing Issue</a></li>
 <li><a href="#cprs-date-formatting-issues">CPRS Date Formatting Issues</a></li>
+<li><a href="#cprs-comma-decimals">CPRS &amp; Comma Decimals</a></li>
 <li><a href="#ability-to-enter-cjk-names">Ability to enter CJK names</a></li>
 <li><a href="#fileman-data-localization">Fileman Data Localization</a></li>
 <li><a href="#hl7-sendreceive-support">HL7 Send/Receive Support</a></li>
@@ -47,8 +48,8 @@
 </ul></li>
 </ul>
 </nav>
-<p><strong>Sam Habiel, Pharm.D.</strong>/ <strong>OSEHRA</strong>/ <strong>14 May 2019</strong></p>
-<p>This is a post that will summarize all of the changes that we made to VistA in order for VistA to work with Korean. We will also describe some items that we couldn't solve in our timeline. The table of contents should give you a good idea of all the items in the list. At the end of the document, you can find links to all the KIDS builds, docker images, and the Github repos hosting all the changes made to the VistA source code.</p>
+<p><strong>Sam Habiel, Pharm.D.</strong>/ <strong>OSEHRA</strong>/ <strong>7 Aug 2019</strong></p>
+<p>This is a post that will summarize all of the changes that we made to VistA in order for VistA to work with languages other the US English. We will also describe some items that we couldn't solve in our timeline. The table of contents should give you a good idea of all the items in the list. At the end of the document, you can find links to all the KIDS builds, docker images, and the Github repos hosting all the changes made to the VistA source code.</p>
 <h1 id="overall-goal-of-the-project">Overall Goal of the Project</h1>
 <p>I personally know how big VistA is; so we tried to focus the project on items that will have wide applicability. That's why we focused on making CPRS usable with other languages; and why we didn't spend as much time in Roll and Scroll applications to do the same.</p>
 <h1 id="topics">Topics</h1>
@@ -79,8 +80,8 @@
 <p>The last problem was that were was M side code that checked for the presence of ASCII as a proxy for the note not being empty. That means if you wrote a note with non-ASCII text with no spaces, it was considered &quot;empty&quot; and was deleted. That was easy to fix.</p>
 <p>This is described in more detail <a href="https://www.osehra.org/post/reports-and-tiu-unicode-support">here</a>, or <a href="http://smh101.com/articles/p6/cprs-tiu.html">duplicated here</a>.</p>
 <h2 id="cprs-localization-strategy-and-framework">CPRS Localization Strategy and Framework</h2>
-<p>At this point, we can send and receive data fully in UTF-8; but all the labels in the program are still in English. Our first &quot;port of call&quot; was to check the official translation framework provided by Delphi: The Integrated Translation Environment (ITE). It had a large amount of problems--we actually couldn't use it even if we wanted to due to these issues. In the end we looked at multiple open source projects, and we chose &quot;Kryvich's Localizer&quot; because it's interoperable with ITE; it required very limited source code changes to get it working; and it had a very simple output format. We translated the CPRS strings into Korean and Chinese.</p>
-<p>This is described in more detail <a href="https://www.osehra.org/post/todays-presentation-delphi-localization-frameworks">here</a> and <a href="https://www.osehra.org/post/plan-vi-meeting-coming-102-8am-edt">here</a>; or alternately duplicated <a href="http://smh101.com/articles/p6/plan6-l10n-tools2_Format.pdf">here</a> and <a href="http://smh101.com/articles/p6/plan6-l10n-kryvich.pdf">here</a>.</p>
+<p>At this point, we can send and receive data fully in UTF-8; but all the labels in the program are still in English. Our first &quot;port of call&quot; was to check the official translation framework provided by Delphi: The Integrated Translation Environment (ITE). It had a large amount of problems--we actually couldn't use it even if we wanted to due to these issues. In the end we looked at multiple open source projects, and we chose &quot;Kryvich's Localizer&quot; because it's interoperable with ITE; it required very limited source code changes to get it working; and it had a very simple output format. We had human translators translate the output file containing the hardcoded strings into Korean and Chinese. We also created machine translations for French, Italian, Russian, and Arabic.</p>
+<p>This is described in more detail <a href="https://www.osehra.org/post/todays-presentation-delphi-localization-frameworks">here</a> and <a href="https://www.osehra.org/post/plan-vi-meeting-coming-102-8am-edt">here</a>; or alternately duplicated <a href="http://smh101.com/articles/p6/plan6-l10n-tools2_Format.pdf">here</a> and <a href="http://smh101.com/articles/p6/plan6-l10n-kryvich.pdf">here</a>. The actual mechanics of choosing a language at runtime is described <a href="http://smh101.com/articles/p6/plan6-german-phase.html#using-the-translation-framework-across-locales">here</a>.</p>
 <h2 id="cprs-problem-list-editing-issue">CPRS Problem List Editing Issue</h2>
 <p>Delphi and VistA use ASCII 255 as a delimiter when editing a problem in the problem list. ASCII 255 is not valid UTF-8, and would crash VistA. We replaced ASCII 255 with a pipe ('|').</p>
 <h2 id="cprs-date-formatting-issues">CPRS Date Formatting Issues</h2>
@@ -89,9 +90,15 @@
 <p>Due to the fact that CPRS sends human readable dates to VistA, VistA has to be able to parse these dates back. That essentially means that we have to reproduce the formatting of the Windows short date format in VistA.</p>
 <p>There is a lot of VistA code which did its own date formatting. Each of these places needed to be fixed individually.</p>
 <p>This is described in more detail with lots of screenshots <a href="https://www.osehra.org/post/cprs-date-display-and-summary-phase-1">here</a> and <a href="http://smh101.com/articles/p6/cprs-dates.html">duplicated here</a>.</p>
+<h2 id="cprs-comma-decimals">CPRS &amp; Comma Decimals</h2>
+<p>This part of the project actually happened later than the other CPRS issues we had to fix -- almost 8 months later, while we were working on German with CPRS.</p>
+<p>CPRS crashes when run in any MS Windows Locale that uses comma instead of dots as the decimal separator. This includes the Windows Locales for French, German, Italian, Russian and all Scandinavian Languages. The cause of the issue has to do with Floating Point conversion to/from strings. The Floating Point conversion fails because M always sends number to CPRS with dots as the decimal separator; whereas in all of these locales, a comma is the decimal separator.</p>
+<p>We leave untouched the issue of displaying the decimal numbers on the M side, as there is no easy solution. I asked a person in Germany (Dr. W. Giere) who was previously involved with the implementation there of parts of VistA in the 1990s about that issue. His reply was that people actually lived with the foreign decimal point, unless the data needed to imported into an external program, such as Excel.</p>
+<p>This is described in more detail <a href="https://www.osehra.org/post/plan-vi-summary-german-phase">here</a>, and <a href="http://smh101.com/articles/p6/plan6-german-phase.html">duplicated here</a>.</p>
 <h2 id="ability-to-enter-cjk-names">Ability to enter CJK names</h2>
 <p>VistA as is could only accommodate ASCII names. One big problem in trying to enter Chinese, Japanese, and Korean (CJK) names was that VistA code checked that the name was uppercase; and if not, tried to uppercase it. Case in language does not exist outside of European languages written in Roman, Cyrillic, or Greek scripts. The first change to allow CJK languages was to only check case if the language supports case.</p>
 <p>With the above change, we can enter longer CJK names (as in 2 characters or longer). However, many CJK names are only a single character long. So the other change that was needed was to allow a family name or a given name that is one character long.</p>
+<p>Later, we tested these changes with Cyrillic and Arabic scripts. They proved adequate and no further changes were needed to be made.</p>
 <p>These were all the changes we made. These changes do not address the following issues:</p>
 <ul>
 <li>The sorting is done by the M database. We have no control over this; if the UTF-8 sorting is inappropriate for the culture, the M database gives you control to allow you to implement a custom sorting module. I unfortunately couldn't tell if the sorting in Korean is correct or not.</li>
@@ -120,7 +127,7 @@
 <h2 id="lexicon-update">Lexicon Update</h2>
 <p>We had a request to put the Korean ICD-10 system into the Lexicon; this was not originally on the project schedule, but ultimately we decided to pursue this over doing a Sample Application Translation. After a false start (I assumed that the Korean ICD-10 will have the same codes as the US version; which was very far from being the case); I ended up replacing the US ICD-10 with the Korean version. In a perfect world, the coding systems will be universal and the same codes can be used across countries. Unfortunately, that is not the case.</p>
 <p>Updating the Lexicon involved a significant learning curve.</p>
-<p>More detail in this (as yet unfinished) <a href="http://smh101.com/articles/p6/lexicon.html">blog post</a>. In case that never gets done, here are the presentations I gave on the topic: <a href="https://www.osehra.org/sites/default/files/plan6-M-phase2-part3-lex.pdf">First</a>, <a href="https://www.osehra.org/sites/default/files/plan6-M-phase2-part3-lex3.pdf">Second</a>.</p>
+<p>More detail in this <a href="http://smh101.com/articles/p6/lexicon.html">blog post</a>. Modifying the Lexicon was not done for any other country coding system.</p>
 <h2 id="dataloader">DataLoader</h2>
 <p>The Dataloader is a C# application written for VistA for Education that let you import data in Excel spreadsheets. It relied on a little known dll that is part of the broker called &quot;bapi32.dll&quot;. As you may remember from earlier in this document, we changed the broker Delphi source code to ensure that the broker worked with non-ASCII languages. We therefore needed to recompile bapi32.dll to ensure that it uses the new code. Finding the source code for bapi32.dll was difficult--but eventually we found it. After compilation it turned out that we needed to modify the C# interface to bapi32.dll as well to pass Unicode rather than ASCII strings (BapiHelper.cs in VistA.DataLoader.Broker project).</p>
 <p>The VistA DataLoader source and install instructions can be found on <a href="https://github.com/OSEHRA/Vista-Dataloader">Github</a>.</p>
@@ -129,14 +136,15 @@
 <p>We did not plan to spend much time in the project on using Panorama, as it does not provide as of today any production ready VistA interfaces. However, we were pleasantly surprised that it just works out of the box.</p>
 <h1 id="project-outputs">Project Outputs</h1>
 <h2 id="documentation-and-presentations">Documentation and Presentations</h2>
-<p>This blog post and everything linked from it, plus everything on the <a href="https://www.osehra.org/groups/vista-internationalization-project-group">VistA Internationlization Project Group</a> functions as good documentation on what was done. For ease of reference, I have all the important presentations/blog posts in chronological order on <a href="http://smh101.com">My Website</a>.</p>
+<p>This blog post and everything linked from it, plus everything on the <a href="https://www.osehra.org/groups/vista-internationalization-project-group">VistA Internationlization Project Group</a> functions as good documentation on what was done. For ease of reference, I have all the important presentations/blog posts in chronological order on <a href="http://smh101.com">My Website</a>. Instructions to help you implement CPRS in your own language are <a href="http://smh101.com/articles/p6/plan6-arabic-phase.html#steps-for-implementing-cprs-in-your-own-language">here</a>.</p>
 <h2 id="kids-build">KIDS Build</h2>
 <p>All the M code changes to VistA that will apply to any internationalization effort are packaged in a single KIDS build, which can be downloaded from <a href="https://github.com/OSEHRA-Sandbox/VistA-M/releases/tag/plan-vi-ko-final">here</a>.</p>
 <h2 id="cprs-executable-vitals-dll">CPRS Executable &amp; Vitals DLL</h2>
-<p>All the work on CPRS (and some work on the Vitals DLL to fix the date issues) can be found ready to run <a href="https://github.com/OSEHRA-Sandbox/VistA/releases/tag/cprs31a-utf8-c">here</a>.</p>
+<p>All the work on CPRS (and some work on the Vitals DLL to fix the date issues) can be found ready to run <a href="https://github.com/OSEHRA-Sandbox/VistA/releases/tag/cprs31a-utf8-d">here</a>. This release is designed to work on any Windows locale. CPRS Picks Language dynamically based on User Locale. We also supply translations files for Korean and Chinese (Human translations) and German, Italian, Russian and Arabic (Machine). Instructions to create a new translation can be found <a href="http://smh101.com/articles/p6/plan6-arabic-phase.html#steps-for-implementing-cprs-in-your-own-language">here</a>.</p>
 <h2 id="docker-images">Docker Images</h2>
 <p>We have two ready to use Docker Images: <a href="https://hub.docker.com/r/osehra/ov6/">OSEHRA VistA 6</a>, which contains limited demo data and is thus suitable as a starting point for a database to be used in production. <a href="https://hub.docker.com/r/osehra/vehu6/">VEHU VistA 6</a> is a database full of demo data.</p>
 <p>There is no need to install the KIDS build into VistA as all the modified code and data are already integrated. The docker images also contain the Korean ICD-10 instead of the US version.</p>
+<p>Do note that the docker images are configured for Korean.</p>
 <p>This <a href="http://smh101.com/articles/p6/plan6-docker.html">link</a> has a couple of screenshots for the OSEHRA VistA 6 docker image.</p>
 <h2 id="github-repositories">Github Repositories</h2>
 <p>There are two main Github repositories:</p>
